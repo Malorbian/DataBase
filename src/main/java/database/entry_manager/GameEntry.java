@@ -1,38 +1,44 @@
 package database.entry_manager;
 
+import database.enums.State;
+
 public class GameEntry {
-    private int id;
     private String title;
-    private String tags;
+    private String artist;
+    private String genre;
+    private State state;
+    private String link;
     private String imagePath;
 
-    public GameEntry(int id, String title, String tags, String imagePath) {
-        this.id = id;
+    public GameEntry(String title, String artist, String genre, State state, String link, String imagePath) {
         this.title = title;
-        this.tags = tags;
+        this.artist = artist;
+        this.genre = genre;
+        this.state = state;
+        this.link = link;
         this.imagePath = imagePath;
     }
 
-    // Konstruktor ohne id (für neue Einträge)
-    public GameEntry(String title, String tags, String imagePath) {
-        this(-1, title, tags, imagePath);
-    }
 
     // Getter und Setter
-    public int getId() {
-        return id;
-    }
+
     public String getTitle() {
         return title;
     }
-    public String getTags() {
-        return tags;
+    public String getArtist() {
+        return artist;
+    }
+    public String getGenre() {
+        return genre;
+    }
+    public String getState() {
+        return state.toString();
+    }
+    public String getLink() {
+        return link;
     }
     public String getImagePath() {
         return imagePath;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 }
