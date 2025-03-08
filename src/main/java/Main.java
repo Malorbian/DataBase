@@ -1,3 +1,4 @@
+import database.controller.MainController;
 import database.database_manager.DBManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,14 +14,17 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("FXML/main.fxml"));
+        fxmlLoader.setControllerFactory(t -> new MainController(stage));
         Parent root = fxmlLoader.load();
-        //Stage stage = new Stage();
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("css/DefaultTheme.css");
+        stage.setScene(scene);
         stage.show();
     }
 
     public static void main(String[] args) {
         DBManager.getInstance();
         launch(args);
+
     }
 }

@@ -6,21 +6,8 @@ import java.util.List;
 
 public class DBGenres extends DBManager {
 
-    private static DBGenres instance;
-
-    private DBGenres() {
-        createTable();
-    }
-
-    public static DBGenres getInstance() {
-        if (instance == null) {
-            instance = new DBGenres();
-        }
-        return instance;
-    }
-
     // Tabelle erstellen, falls sie noch nicht existiert
-    private void createTable() {
+    protected static void createTable() {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS genres (" +
@@ -35,10 +22,8 @@ public class DBGenres extends DBManager {
     }
 
     public static void addGenre(String genre) {
-        String sql = "INSERT OR IGNORE INTO genres (name) VALUES (?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            addGenre(genre, conn);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,14 +31,15 @@ public class DBGenres extends DBManager {
 
     public static void addGenre(String genre, Connection conn) {
         String sql = "INSERT OR IGNORE INTO genres (name) VALUES (?)";
-        try (Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, genre);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<String> getAllGenres() {
+    public static List<String> getAllGenres() {
         List<String> genres = new ArrayList<>();
         String sql = "SELECT name FROM genres";
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -66,6 +52,32 @@ public class DBGenres extends DBManager {
             e.printStackTrace();
         }
         return genres;
+    }
+
+    protected static int getGenreId(String name, Connection conn) {
+
+        String sql = "SELECT genre_id FROM genres WHERE LOWER(name) = LOWER(?)";
+        try (PreparedStatement pStmt = conn.prepareStatement(sql)) {
+            // Check if artist already exists
+            pStmt.setString(1, name);
+
+            ResultSet rs = pStmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("genre_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    protected static int checkAndAddGenre(String name, Connection conn) {
+        int genreId = getGenreId(name, conn);
+        if (genreId == -1) {
+            addGenre(name, conn);
+            genreId = getGenreId(name, conn);
+        }
+        return genreId;
     }
 
 }

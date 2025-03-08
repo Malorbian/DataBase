@@ -33,26 +33,6 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.46.1.2</version> <!-- Aktuelle Version prüfen -->
         </dependency>
-        <!-- JavaFX Controls -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>21</version> <!-- Falls du Java 17 nutzt, setze 17.0.2 -->
-        </dependency>
-
-        <!-- JavaFX FXML (falls du FXML verwendest) -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>21</version>
-        </dependency>
-
-        <!-- Falls du auch JavaFX Media, Graphics oder andere Module brauchst -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>21</version>
-        </dependency>
     </dependencies>
 
     <build>
