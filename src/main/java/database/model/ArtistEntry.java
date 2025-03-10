@@ -19,8 +19,6 @@ public class ArtistEntry {
     public String getName() {
         return name;
     }
-    public String getDiscipline() {
-        return discipline.toString();
-    }
+    public String getDiscipline() { return discipline.toString(); }
 
 }

@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class DBVideos extends DBManager {
+class DBVideos extends DBHelper {
 
     // Tabelle erstellen, falls sie noch nicht existiert
     protected static void createTable() {
@@ -78,5 +78,21 @@ class DBVideos extends DBManager {
             e.printStackTrace();
         }
         return videos;
+    }
+
+    protected static int getVideoId(String title, String artist, double length) {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            return getVideoId(title, artist, length, conn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    protected static int getVideoId(String title, String artist, double length, Connection conn) {
+        String sql = "SELECT video_id FROM videos v " +
+                "JOIN artists a ON v.artist_id = a.artist_id " +
+                "WHERE LOWER(title) = LOWER(?) AND LOWER(a.name) = LOWER(?) AND length = ?";
+        return getIdHelper(title, artist, length, "video_id", sql, conn);
     }
 }

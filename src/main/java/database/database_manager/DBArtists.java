@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class DBArtists extends DBManager {
+class DBArtists extends DBHelper {
 
     // Tabelle erstellen, falls sie noch nicht existiert
     protected static void createTable() {

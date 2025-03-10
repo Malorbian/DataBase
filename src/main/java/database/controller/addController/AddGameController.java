@@ -1,4 +1,4 @@
-package database.controller;
+package database.controller.addController;
 
 import database.enums.Discipline;
 import database.enums.TableNames;
@@ -7,14 +7,12 @@ import database.enums.State;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.PlatformEntry;
 import io.github.palexdev.materialfx.controls.*;
-import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -22,32 +20,10 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.util.*;
 
-public class AddGameController extends ControllerBase {
+public class AddGameController extends AddControllerHelper {
 
-    // -----------------------------------
     // ---------- FXML Elements ----------
-    // -----------------------------------
 
-
-
-    @FXML
-    BorderPane main;
-
-    // Header
-    @FXML
-    MFXToggleButton tBtnPinned;
-
-    // Game column
-    @FXML
-    MFXTextField tfName;
-    @FXML
-    MFXComboBox<String> cbArtist;
-    @FXML
-    MFXComboBox<String> cbGenre;
-    @FXML
-    MFXComboBox<String> cbState;
-    @FXML
-    MFXTextField tfLink;
     @FXML
     MFXTextField tfImage;
     @FXML
@@ -55,26 +31,11 @@ public class AddGameController extends ControllerBase {
     @FXML
     MFXTextField tfVersion;
 
-    // Tag column
-    @FXML
-    MFXCheckListView<String> clvTagsLeft;
-    @FXML
-    MFXTextField tfAddTag;
-
     // Ratings Column
     @FXML
     TableView<PlatformEntry> tvRatings;
     @FXML
     MFXTextField tfAddPlatform;
-
-    // Bottom row
-    @FXML
-    Label lblStatus;
-    @FXML
-    Button btnCancel;
-    @FXML
-    Button btnSaveGame;
-
 
 
     public AddGameController(Stage stage) {
@@ -82,37 +43,14 @@ public class AddGameController extends ControllerBase {
     }
 
 
-
+    @Override
     public void initialize() {
 
-        // Initialize GridPane
-        GridPane.setHgrow(tvRatings, Priority.NEVER);
-        GridPane.setVgrow(tvRatings, Priority.NEVER);
-        initializeWindowDragging(stage, main);
-
-        // Initialize Cancel Button
-        btnCancel.setOnAction(event -> btnCancel.getScene().getWindow().hide());
-        // Initialize Save Game Button
-        initializeSaveGameButton();
-
-        // Initialize Artist/Genre Editable ComboBox and State ComboBox
-        initializeEditableComboBox(cbArtist, logic.getArtistsNames(), TableNames.ARTIST, Discipline.GAMES);
-        initializeEditableComboBox(cbGenre, logic.getGenres(), TableNames.GENRE);
-        // Get State enum values as List
-        initializeComboBox(cbState, State.getValues());
-
-        // Initialize Tags CheckListViews
-        initializeCheckListView(clvTagsLeft, logic.getTags());
-
-        // Initialize Pinning ToggleButton
-        tBtnPinned.setOnAction(event -> {
-            Stage stage = (Stage) tBtnPinned.getScene().getWindow();
-            stage.setAlwaysOnTop(tBtnPinned.isSelected());
-        });
-
+        super.initialize();
 
         // Initialize Rating TableView
-
+        GridPane.setHgrow(tvRatings, Priority.NEVER);
+        GridPane.setVgrow(tvRatings, Priority.NEVER);
         List<String> ratingsColumnNames = getFieldsFromClass(PlatformEntry.class);
         initializeTableView(tvRatings, ratingsColumnNames);
         tvRatings.setEditable(true);
@@ -129,8 +67,7 @@ public class AddGameController extends ControllerBase {
             tvRatings.getItems().add(new PlatformEntry(platform));
         }
 
-
-        // Add Tag/Platform Button setup
+        // Add Platform Button Functionality
 
         tfAddPlatform.setOnAction(event -> {
             // Add platform to database and logic
@@ -139,32 +76,26 @@ public class AddGameController extends ControllerBase {
             tvRatings.getItems().add(new PlatformEntry(tfAddPlatform.getText()));
             tfAddPlatform.clear();
         });
-        tfAddTag.setOnAction(event -> {
-            // Add tag to database and logic
-            logic.addStringToTable(tfAddTag.getText(), TableNames.TAG);
-            // Add tag to CheckListView
-            clvTagsLeft.getItems().add(tfAddTag.getText());
-            tfAddTag.clear();
-        });
-
     }
 
-    private void initializeSaveGameButton() {
-        // Disable button until all necessary fields are filled
-        btnSaveGame.setDisable(true);
-        // Add listener to check if all necessary fields are filled
-        BooleanBinding saveGameBinding = cbArtist.valueProperty().isNotNull().and(
+
+    // ----- Implementing Abstract Methods -----
+
+    @Override
+    void initArtistsComboBox() {
+        initializeEditableComboBox(cbArtist, logic.getArtistsGames(), TableNames.ARTIST, Discipline.GAMES, lblStatus);
+    }
+
+    @Override
+    BooleanBinding getSaveButtonRequirements() {
+        return cbArtist.valueProperty().isNotNull().and(
                 cbState.valueProperty().isNotNull().and(
                         tfName.textProperty().isNotEmpty()
                 ));
-        // Bind button to text fields and combobox
-        btnSaveGame.disableProperty().bind(saveGameBinding.not());
-        // Add action event to button to add game to database
-        btnSaveGame.setOnAction(getSaveGameHandler());
     }
 
-
-    private EventHandler<ActionEvent> getSaveGameHandler() {
+    @Override
+    EventHandler<ActionEvent> getSaveEntryHandler() {
         return event -> {
             // Game
             String title = tfName.getText();
@@ -180,18 +111,15 @@ public class AddGameController extends ControllerBase {
             }
             PlayedEntry lastPlayed = new PlayedEntry(-1, dateString, tfVersion.getText());
             // Tags
-            List<String> tags = clvTagsLeft.getSelectionModel().getSelectedValues();
-            //tags.addAll(clvTagsRight.getItems());
+            List<String> tags = clvTags.getSelectionModel().getSelectedValues();
             // Ratings
             Map<String, String> ratings = new HashMap<>();
             tvRatings.getItems().forEach(entry -> ratings.put(entry.getPlatform(), entry.getRating()));
             // Add game to database
             logic.addGame(new GameDataSet(-1, title, artist, genre, state, link, image, ratings, tags, lastPlayed));
             // Close window
-            btnSaveGame.getScene().getWindow().hide();
+            stage.close();
         };
     }
-
-
 
 }

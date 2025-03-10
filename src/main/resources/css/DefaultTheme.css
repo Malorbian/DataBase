@@ -17,9 +17,16 @@
 
 .border-pane {
   -fx-background-color: transparent;
-  -fx-background-radius: 10;
-  -fx-border-color: #ebebeb;
-  -fx-border-radius: 10;
+  -fx-background-radius: 5;
+  -fx-border-color: lightgray;
+  -fx-border-radius: 5;
+}
+
+.tri-state-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
+    -fx-border-color: -mfx-onyx;
+    -fx-border-radius: 5;
 }
 
 .grid-pane {
@@ -158,7 +165,7 @@
 .mfx-button:focused,
 .mfx-button {
   -fx-background-radius: 3px;
-  -fx-background-insets: 0px;
+  -fx-background-color: lightgray;
 }
 
 .mfx-button,

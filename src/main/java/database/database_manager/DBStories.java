@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class DBStories extends DBManager {
+class DBStories extends DBHelper {
 
     // Tabelle erstellen, falls sie noch nicht existiert
     protected static void createTable() {
@@ -37,8 +37,8 @@ class DBStories extends DBManager {
     public static void addStory(StoryEntry story) {
         try (Connection conn = DriverManager.getConnection(DB_URL)){
             // Check if artist already exists
-            int artistId = DBArtists.checkAndAddArtist(story.getArtist(), Discipline.STORIES, conn);
-            int genreId = DBGenres.checkAndAddGenre(story.getGenre(), conn);
+            int artistId = DBArtists.getArtistId(story.getArtist(), Discipline.STORIES, conn);
+            int genreId = DBGenres.getGenreId(story.getGenre(), conn);
 
             // Insert game
             String sql = "INSERT INTO stories(title, artist_id, genre_id, state, link) VALUES(?, ?, ?, ?, ?)";
@@ -75,6 +75,23 @@ class DBStories extends DBManager {
             e.printStackTrace();
         }
         return stories;
+    }
+
+    protected static int getStoryId(String title, String artist) {
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            return getStoryId(title, artist, conn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    protected static int getStoryId(String title, String artist, Connection conn) {
+        String sql = "SELECT story_id FROM stories " +
+                "JOIN artists ON stories.artist_id = artists.artist_id " +
+                "WHERE LOWER(title) = LOWER(?) AND LOWER(artists.name) = LOWER(?)";
+        return getIdHelper(title, artist, "story_id", sql, conn);
+
     }
 
 }

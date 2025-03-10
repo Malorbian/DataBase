@@ -1,12 +1,14 @@
 package database.database_manager;
 
+import database.enums.Discipline;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class DBStories_Tags extends DBManager {
+class DBStories_Tags extends DBHelper {
 
     // Tabelle erstellen, falls sie noch nicht existiert
     protected static void createTable() {
@@ -26,24 +28,8 @@ class DBStories_Tags extends DBManager {
         }
     }
 
-    protected static void addStoryTagRelation(int story_id, int tag_id) {
-        String sql = "INSERT OR IGNORE INTO stories_tags(story_id, tag_id) VALUES(?, ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-             addStoryTagRelation(story_id, tag_id, conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static void addStoryTagRelation(int story_id, int tag_id, Connection conn) {
-        String sql = "INSERT OR IGNORE INTO stories_tags(story_id, tag_id) VALUES(?, ?)";
-        try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, story_id);
-            pstmt.setInt(2, tag_id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    protected static void addStoryTagRelations(int story_id, List<String> tags) {
+        addRelationsHelper(story_id, tags, Discipline.STORIES);
     }
 
     protected static Map<Integer, List<Integer>> getAllStoryTagRelations() {

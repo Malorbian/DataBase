@@ -4,7 +4,7 @@ import database.enums.State;
 import database.model.propertyModels.GameDataSet;
 
 public class GameEntry {
-    private Integer id;
+    private int id;
     private String title;
     private String artist;
     private String genre;
@@ -14,7 +14,7 @@ public class GameEntry {
     private String lastPlayedDate;
     private String lastPlayedVersion;
 
-    public GameEntry(Integer id, String title, String artist,
+    public GameEntry(int id, String title, String artist,
                      String genre, State state, String link,
                      String imagePath, String lastPlayedDate, String lastPlayedVersion) {
         this.id = id;
@@ -37,7 +37,7 @@ public class GameEntry {
 
     // Getter und Setter
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
     public String getTitle() {

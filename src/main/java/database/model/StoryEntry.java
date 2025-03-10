@@ -1,6 +1,7 @@
 package database.model;
 
 import database.enums.State;
+import database.model.propertyModels.StoryDataSet;
 
 public class StoryEntry {
     private Integer id;
@@ -14,9 +15,14 @@ public class StoryEntry {
         this.id = id;
         this.title = name;
         this.artist = artist;
-        this.link = link;
-        this.state = state;
         this.genre = genre;
+        this.state = state;
+        this.link = link;
+    }
+
+    public StoryEntry(StoryDataSet story) {
+        this(Integer.valueOf(story.getId()), story.getTitle(), story.getArtist(),
+                story.getGenre(), State.valueOf(story.getState()), story.getLink());
     }
 
     public Integer getId() { return id; }

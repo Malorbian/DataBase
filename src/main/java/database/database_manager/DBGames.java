@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class DBGames extends DBManager {
+class DBGames extends DBHelper {
 
     // Tabelle erstellen, falls sie noch nicht existiert
     protected static void createTable() {
@@ -39,7 +39,7 @@ class DBGames extends DBManager {
         try (Connection conn = DriverManager.getConnection(DB_URL)){
             // Check if artist already exists
             int artisId = DBArtists.getArtistId(game.getArtist(), Discipline.GAMES, conn);
-            int genreId = DBGenres.checkAndAddGenre(game.getGenre(), conn);
+            int genreId = DBGenres.getGenreId(game.getGenre(), conn);
 
             // Insert game
             String sql = "INSERT INTO games(title, artist_id, genre_id, state, link, imagePath) VALUES(?, ?, ?, ?, ?, ?)";
@@ -59,29 +59,29 @@ class DBGames extends DBManager {
 
     // Alle Spieleinträge abrufen
     public static List<GameEntry> getAllGames() {
-    System.out.println("Retrieving games");
-    List<GameEntry> list = new ArrayList<>();
-    String sql = "SELECT games.game_id, title, a.name AS artist_name, g.name AS genre_name, state, link, imagePath, pg.date, pg.version FROM games " +
-        "LEFT JOIN main.artists a on a.artist_id = games.artist_id " +
-            "LEFT JOIN main.genres g on g.genre_id = games.genre_id " +
-            "LEFT JOIN main.played_games pg on games.game_id = pg.game_id";
-    try (Connection conn = DriverManager.getConnection(DB_URL);
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
-        while (rs.next()) {
-            GameEntry game = new GameEntry(rs.getInt("game_id"),
-                    rs.getString("title"),
-                    rs.getString("artist_name"),
-                    rs.getString("genre_name"),
-                    State.valueOf(rs.getString("state")),
-                    rs.getString("link"),
-                    rs.getString("imagePath"),
-                    rs.getString("date"),
-                    rs.getString("version")
-            );
-            list.add(game);
-            System.out.println(rs.getString("title") +" retrieved");
-        }
+        List<GameEntry> list = new ArrayList<>();
+        String sql = "SELECT games.game_id, title, a.name AS artist_name, g.name AS genre_name, state, link, imagePath, pg.date, pg.version FROM games " +
+            "LEFT JOIN main.artists a on a.artist_id = games.artist_id " +
+                "LEFT JOIN main.genres g on g.genre_id = games.genre_id " +
+                "LEFT JOIN main.played_games pg on games.game_id = pg.game_id";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+            int counter = 0;
+            while (rs.next()) {
+                GameEntry game = new GameEntry(rs.getInt("game_id"),
+                        rs.getString("title"),
+                        rs.getString("artist_name"),
+                        rs.getString("genre_name"),
+                        State.valueOf(rs.getString("state")),
+                        rs.getString("link"),
+                        rs.getString("imagePath"),
+                        rs.getString("date"),
+                        rs.getString("version")
+                );
+                list.add(game);
+                counter++;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -101,18 +101,8 @@ class DBGames extends DBManager {
         String sql = "SELECT game_id FROM games " +
                         "JOIN artists ON games.artist_id = artists.artist_id " +
                         "WHERE LOWER(games.title) = LOWER(?) AND LOWER(artists.name) = LOWER(?)";
-        try (PreparedStatement pStmt = conn.prepareStatement(sql)) {
-            // Check if artist already exists
-            pStmt.setString(1, title);
-            pStmt.setString(2, artist);
-
-            ResultSet rs = pStmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("game_id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
+        return getIdHelper(title, artist, "game_id", sql, conn);
     }
+
+
 }

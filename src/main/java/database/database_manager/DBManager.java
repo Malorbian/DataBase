@@ -5,30 +5,26 @@ import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class DBManager {
-    protected static final String DB_Name = "Daten.db";
-    protected static final String App_PATH = Paths.get(System.getProperty("user.home"), "AppData", "Local", "AppDatabase").toString();
-    protected static final String DB_URL = "jdbc:sqlite:" + Paths.get(App_PATH, DB_Name).toString();
 
-    static DBManager instance;
+    // -----------------------------
+    // ----- database creation -----
+    // -----------------------------
 
-    protected DBManager() {
+    public static void initDefaultDatabase() {
+        DBCreation.createDatabase();
     }
 
-    public static DBManager getInstance() {
-        if (instance == null) {
-            instance = new DBManager();
-            createDatabase(App_PATH, DB_Name);
-        }
-        return instance;
+    public static void setDatabaseToDefault() {
+        DBCreation.setDefaultDatabase();
     }
+
+
+
 
 
 
@@ -37,15 +33,39 @@ public class DBManager {
     // -------------------------------------------------
 
 
+
+    // ----- Change/Create database -----
+    public static void changeDatabase() {
+        DBHelper.changeDatabase();
+    }
+
+    public static void createNewDatabase() {
+        DBHelper.changeDatabase();
+        DBCreation.createDatabase();
+    }
+
+
+
+    // -----------------------------------
     // ----- Add entries to database -----
+    // -----------------------------------
 
 
-    // Add artist
+    // ----- Add artists/genres/tags/platforms -----
+
     public static void addArtist(ArtistEntry artist) {
         DBArtists.addArtist(artist);
     }
 
-    // Add game
+    public static void addPlatform (String platformName) { DBRatings.addPlatform(platformName); }
+
+    public static void addTag(String tag) { DBTags.addTag(tag); }
+
+    public static void addGenre(String genre) { DBGenres.addGenre(genre); }
+
+
+    // ----- Add game to database -----
+
     public static int addGame(GameDataSet game) {
         // Add game
         DBGames.addGame(new GameEntry(game));
@@ -63,24 +83,55 @@ public class DBManager {
         return game_id;
     }
 
-    public static boolean addPlatform (String platformName) {
-        return DBRatings.addPlatform(platformName);
+
+    // ----- Add story to database -----
+
+    public static int addStory(StoryDataSet story) {
+        // Add story
+        DBStories.addStory(new StoryEntry(story));
+
+        // Add story_tags relation
+        int story_id = DBStories.getStoryId(story.getTitle(), story.getArtist());
+        DBStories_Tags.addStoryTagRelations(story_id, story.getTags());
+
+        return story_id;
     }
 
-    public static void addTag(String tag) {
-        DBTags.addTag(tag);
+
+    // ----- Add video to database -----
+
+    public static int addVideo(VideoDataSet video) {
+        // Add video
+        DBVideos.addVideo(new VideoEntry(video));
+
+        // Add video_tags relation
+        int video_id = DBVideos.getVideoId(video.getTitle(), video.getArtist(), Double.parseDouble(video.getLength()));
+        DBVideos_Tags.addVideoTagRelations(video_id, video.getTags());
+
+        return video_id;
     }
 
-    public static void addGenre(String genre) {
-        DBGenres.addGenre(genre);
-    }
 
 
+    // -------------------------------------
     // ----- Get entries from database -----
+    // -------------------------------------
 
 
-    // Get games from database
-    public List<GameDataSet> getGameDataSetCollection() {
+    // ----- Get artists/genres/tags/platforms -----
+
+    public static List<ArtistEntry> getArtists() { return DBArtists.getAllArtists(); }
+
+    public static List<String> getGenres() { return DBGenres.getAllGenres(); }
+
+    public static List<String> getTags() { return DBTags.getAllTags(); }
+
+    public static List<String> getPlatforms() { return DBRatings.getAllPlatforms(); }
+
+
+    // ----- Get games from database -----
+
+    public static List<GameDataSet> getGameDataSetCollection() {
 
         List<GameDataSet> gameDataSets = new ArrayList<>();
         List<GameEntry> games = DBGames.getAllGames();
@@ -95,8 +146,10 @@ public class DBManager {
         return gameDataSets;
     }
 
-    // Get stories from database
-    public List<StoryDataSet> getStoryDataSetCollection() {
+
+    // ----- Get stories from database -----
+
+    public static List<StoryDataSet> getStoryDataSetCollection() {
 
         List<StoryDataSet> storyDataSets = new ArrayList<>();
         List<StoryEntry> stories = DBStories.getAllStories();
@@ -110,8 +163,10 @@ public class DBManager {
         return storyDataSets;
     }
 
-    // Get videos from database
-    public List<VideoDataSet> getVideoDataSetCollection() {
+
+    // ----- Get videos from database -----
+
+    public static List<VideoDataSet> getVideoDataSetCollection() {
 
         List<VideoDataSet> videoDataSets = new ArrayList<>();
         List<VideoEntry> videos = DBVideos.getAllVideos();
@@ -125,107 +180,8 @@ public class DBManager {
         return videoDataSets;
     }
 
-    // Get stories from database
-    public static List<StoryDataSet> getStories() {
-        // TODO
-        return null;
-    }
-
-    // Get videos from database
-    public static List<StoryDataSet> getVideos() {
-        // TODO
-        return null;
-    }
-
-    public List<ArtistEntry> getArtists() {
-        return DBArtists.getAllArtists();
-    }
-
-    public List<String> getGenres() {
-        return DBGenres.getAllGenres();
-    }
-
-    public List<String> getTags() {
-        return DBTags.getAllTags();
-    }
-
-    public List<String> getPlatforms() {
-        return DBRatings.getAllPlatforms();
-    }
-
-    // Create database
-    public static void createDatabase(String path, String name) {
-        File file = new File(path);
-        // Check for directory
-        if (!file.exists()) {
-            if (file.mkdirs()) { // Erstellt das Verzeichnis (inklusive übergeordneter Verzeichnisse)
-                System.out.println("Verzeichnis wurde erstellt.");
-            } else {
-                System.out.println("Fehler beim Erstellen des Verzeichnisses.");
-            }
-        }
-        // Check for db
-        file = new File(Paths.get(path, name).toString());
-        try {
-            if (file.createNewFile()) {
-                System.out.println("Database created: " + file.getName());
-                firstDBSetup();
-            } else {
-                System.out.println("Database already exists.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
 
-    // ------------------------------------
-    // ---------- Helper methods ----------
-    // ------------------------------------
 
-
-    // Enable foreign key support
-    protected static void enableForeignKey(Connection conn) throws SQLException {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.execute("PRAGMA foreign_keys = ON;");
-        }
-    }
-
-    // helper for getting tags for id
-    protected static List<String> getTagsForIdHelper(String sql, int id) {
-        List<String> tags = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                tags.add(rs.getString("name"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tags;
-    }
-
-
-
-    // --------------------------
-    // ----- First DB Setup -----
-    // --------------------------
-
-    // Initialize all tables in the database
-    private static void firstDBSetup() {
-        DBArtists.createTable();
-        DBGenres.createTable();
-        DBGames.createTable();
-        DBStories.createTable();
-        DBVideos.createTable();
-        DBTags.createTable();
-        DBPlayed.createTable();
-        DBRatings.createTable();
-        DBGames_Tags.createTable();
-        DBStories_Tags.createTable();
-        DBVideos_Tags.createTable();
-    }
 }

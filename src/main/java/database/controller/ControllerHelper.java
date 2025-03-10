@@ -11,11 +11,11 @@ import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
@@ -23,17 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ControllerBase {
+public class ControllerHelper {
 
     protected final Logic logic;
     protected final Stage stage;
+
+    boolean isDraggable = true;
     private double xOffset;
     private double yOffset;
 
-    public ControllerBase(Stage stage) {
+
+    public ControllerHelper(Stage stage) {
         logic = Logic.getInstance();
         this.stage = stage;
     }
+
 
     // Get all fields from a class
     protected List<String> getFieldsFromClass(Class<?> clazz) {
@@ -51,8 +55,10 @@ public class ControllerBase {
             yOffset = stage.getY() - event.getScreenY();
         });
         window.setOnMouseDragged(event -> {
-            stage.setX(event.getScreenX() + xOffset);
-            stage.setY(event.getScreenY() + yOffset);
+            if (isDraggable) {
+                stage.setX(event.getScreenX() + xOffset);
+                stage.setY(event.getScreenY() + yOffset);
+            }
         });
     }
 
@@ -61,24 +67,29 @@ public class ControllerBase {
         comboBox.setItems(obsItemList);
     }
 
-    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, TableNames tableName, Discipline discipline) {
+    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, TableNames tableName, Discipline discipline, Label statusLabel) {
         ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
         comboBox.setItems(obsItemList);
         comboBox.setOnCancel(s -> comboBox.setText(comboBox.getSelectedItem()));
         comboBox.setOnCommit(s -> {
-            if (!obsItemList.contains(s)) {
-                obsItemList.add(s);
-                logic.addStringToTable(s, tableName, discipline);
+            try {
+                if (!obsItemList.contains(s)) {
+                    obsItemList.add(s);
+                    logic.addStringToTable(s, tableName, discipline);
+                }
+                comboBox.selectItem(s);
+                statusLabel.setText("Added " + s + " to " + tableName);
+            } catch (Exception e) {
+                statusLabel.setText("Error: " + e.getMessage());
             }
-            comboBox.selectItem(s);
         });
     }
 
-    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, TableNames tableName) {
+    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, TableNames tableName, Label statusLabel) {
         if (tableName == TableNames.ARTIST) {
             throw new IllegalArgumentException("Discipline must be provided for ARTIST table");
         }
-        initializeEditableComboBox(comboBox, items, tableName, null);
+        initializeEditableComboBox(comboBox, items, tableName, null, statusLabel);
     }
 
     protected void initializeCheckListView(MFXCheckListView<String> checkListView, List<String> items) {

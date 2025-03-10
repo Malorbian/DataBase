@@ -1,9 +1,11 @@
 package database.database_manager;
 
+import database.enums.Discipline;
+
 import java.sql.*;
 import java.util.*;
 
-class DBGames_Tags extends DBManager {
+class DBGames_Tags extends DBHelper {
 
     // Tabelle erstellen, falls sie noch nicht existiert
     protected static void createTable() {
@@ -23,55 +25,8 @@ class DBGames_Tags extends DBManager {
         }
     }
 
-    protected static void addGameTagRelation(int game_id, int tag_id) {
-        String sql = "INSERT OR IGNORE INTO games_tags(game_id, tag_id) VALUES(?, ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            addGameTagRelation(game_id, tag_id, conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static void addGameTagRelation(int game_id, int tag_id, Connection conn) {
-        String sql = "INSERT OR IGNORE INTO games_tags(game_id, tag_id) VALUES(?, ?)";
-        try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, game_id);
-            pstmt.setInt(2, tag_id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     protected static void addGameTagRelations(int game_id, List<String> tags) {
-        String selectTagIdSQL = "SELECT tag_id FROM tags WHERE name = ?";
-        String insertRelationSQL = "INSERT OR IGNORE INTO games_tags(game_id, tag_id) VALUES(?, ?)";
-
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement selectTagStmt = conn.prepareStatement(selectTagIdSQL);
-             PreparedStatement insertRelationStmt = conn.prepareStatement(insertRelationSQL)) {
-
-            conn.setAutoCommit(false); // Beginne eine Transaktion
-
-            for (String tag : tags) {
-                selectTagStmt.setString(1, tag);
-                try (ResultSet rs = selectTagStmt.executeQuery()) {
-                    if (rs.next()) {
-                        int tag_id = rs.getInt("tag_id");
-
-                        insertRelationStmt.setInt(1, game_id);
-                        insertRelationStmt.setInt(2, tag_id);
-                        insertRelationStmt.addBatch(); // Batch-Insert vorbereiten
-                    }
-                }
-            }
-
-            insertRelationStmt.executeBatch(); // Führt alle gesammelten Inserts auf einmal aus
-            conn.commit(); // Transaktion abschließen
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        addRelationsHelper(game_id, tags, Discipline.GAMES);
     }
 
     protected static Map<Integer, List<Integer>> getAllGameTagRelations() {

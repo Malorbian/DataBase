@@ -1,6 +1,7 @@
 package database.model;
 
 import database.enums.State;
+import database.model.propertyModels.VideoDataSet;
 
 public class VideoEntry {
     private Integer id;
@@ -19,6 +20,10 @@ public class VideoEntry {
         this.state = state;
         this.link = link;
         this.length = length;
+    }
+
+    public VideoEntry (VideoDataSet video) {
+        this(Integer.parseInt(video.getId()), video.getTitle(), video.getArtist(), video.getGenre(), State.valueOf(video.getState()), video.getLink(), Double.parseDouble(video.getLength()));
     }
 
     public Integer getId() { return id; }

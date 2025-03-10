@@ -4,16 +4,16 @@ import database.database_manager.DBManager;
 import database.enums.Discipline;
 import database.enums.TableNames;
 import database.model.ArtistEntry;
-import database.model.GameEntry;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Logic {
-    private DBManager dbManager;
     private static Logic instance;
 
     private List<GameDataSet> games;
@@ -21,21 +21,24 @@ public class Logic {
     private List<VideoDataSet> videos;
     private List<String> genres;
     private List<String> tags;
-    private List<String> artistsNames;
+    private List<String> artistsGames;
+    private List<String> artistsStories;
+    private List<String> artistsVideos;
     private List<String> platforms;
 
+
+    protected static final String DB_Default_Name = "Data.db";
+    protected static final String App_Default_PATH = Paths.get(System.getProperty("user.home"), "AppData", "Local", "AppDatabase").toString();
+    protected static final String DB_Default_URL = "jdbc:sqlite:" + Paths.get(App_Default_PATH, DB_Default_Name).toString();
+
+    protected static String DB_Name = DB_Default_Name;
+    protected static String App_PATH = App_Default_PATH;
+    protected static String DB_URL = DB_Default_URL;
+
+
     private Logic() {
-        dbManager = DBManager.getInstance();
-        games = dbManager.getGameDataSetCollection();
-        stories = dbManager.getStoryDataSetCollection();
-        videos = dbManager.getVideoDataSetCollection();
-        genres = dbManager.getGenres();
-        tags = dbManager.getTags();
-        artistsNames = new ArrayList<>();
-        for (ArtistEntry artist : dbManager.getArtists()) {
-            artistsNames.add(artist.getName());
-        }
-        platforms = dbManager.getPlatforms();
+        DBManager.initDefaultDatabase();
+        reloadData();
     }
 
     public static Logic getInstance() {
@@ -46,33 +49,121 @@ public class Logic {
     }
 
 
-    public void addGame(GameDataSet game) {
-        game.setId(String.valueOf(DBManager.addGame(game)));
-        games.add(game);
+    // ----- Constructor Helper -----
+
+    private void fillArtistLists() {
+        artistsGames = new ArrayList<>();
+        artistsStories = new ArrayList<>();
+        artistsVideos = new ArrayList<>();
+        for (ArtistEntry artist : DBManager.getArtists()) {
+            switch (Discipline.valueOf(artist.getDiscipline())) {
+                case GAMES:
+                    artistsGames.add(artist.getName());
+                    break;
+                case STORIES:
+                    artistsStories.add(artist.getName());
+                    break;
+                case VIDEOS:
+                    artistsVideos.add(artist.getName());
+                    break;
+                default:
+                    break;
+            }
+        }
     }
+
+    public void reloadData() {
+        games = DBManager.getGameDataSetCollection();
+        stories = DBManager.getStoryDataSetCollection();
+        videos = DBManager.getVideoDataSetCollection();
+        genres = DBManager.getGenres();
+        tags = DBManager.getTags();
+        fillArtistLists();
+        platforms = DBManager.getPlatforms();
+    }
+
+
+
+
+    // -------------------------------------
+    // ---------- Data Management ----------
+    // -------------------------------------
+
+
+
+    // ----- Database selection/creation -----
+
+    public void openDatabase(String dbNamePath) {
+        updatePaths(dbNamePath);
+        DBManager.changeDatabase();
+        reloadData();
+    }
+
+    public void createNewDatabase(String dbNamePath) {
+        updatePaths(dbNamePath);
+        DBManager.createNewDatabase();
+        reloadData();
+    }
+
+    private void updatePaths(String dbNamePath) {
+        Path path = Paths.get(dbNamePath);
+        DB_Name = path.getFileName().toString();
+        if (path.getParent() != null) App_PATH = path.getParent().toString();
+        DB_URL = "jdbc:sqlite:" + Paths.get(App_PATH, DB_Name).toString();
+    }
+
+
+
+    // -------------------------------------------
+    // ----- Add entries to database / logic -----
+    // -------------------------------------------
+
+
+    // ----- Add artists/genres/tags/platforms -----
 
     public void addPlatform(String platformName) {
         if (platforms.contains(platformName)) { return; }
         platforms.add(platformName);
-        dbManager.addPlatform(platformName);
+        DBManager.addPlatform(platformName);
     }
 
     public void addTag(String tag) {
         if (tags.contains(tag)) { return; }
         tags.add(tag);
-        dbManager.addTag(tag);
+        DBManager.addTag(tag);
     }
 
     public void addGenre(String genre) {
         if (genres.contains(genre)) { return; }
         genres.add(genre);
-        dbManager.addGenre(genre);
+        DBManager.addGenre(genre);
     }
 
     public void addArtistName(ArtistEntry artist) {
-        if (artistsNames.contains(artist)) { return; }
-        artistsNames.add(artist.getName());
-        dbManager.addArtist(artist);
+        switch (Discipline.valueOf(artist.getDiscipline())) {
+            case GAMES:
+                if (artistsGames.contains(artist.getName())) { return; }
+                artistsGames.add(artist.getName());
+                break;
+            case STORIES:
+                if (artistsStories.contains(artist.getName())) { return; }
+                artistsStories.add(artist.getName());
+                break;
+            case VIDEOS:
+                if (artistsVideos.contains(artist.getName())) { return; }
+                artistsVideos.add(artist.getName());
+                break;
+            default:
+                break;
+        }
+        DBManager.addArtist(artist);
+    }
+
+    public void addStringToTable(String string, TableNames tableName) {
+        if (tableName == TableNames.ARTIST) {
+            throw new IllegalArgumentException("Discipline must be provided for ARTIST table");
+        }
+        addStringToTable(string, tableName, null);
     }
 
     public void addStringToTable(String string, TableNames tableName, Discipline discipline) {
@@ -94,43 +185,59 @@ public class Logic {
         }
     }
 
-    public void addStringToTable(String string, TableNames tableName) {
-        if (tableName == TableNames.ARTIST) {
-            throw new IllegalArgumentException("Discipline must be provided for ARTIST table");
-        }
-        addStringToTable(string, tableName, null);
+
+    // ----- Add game/story/video -----
+
+    public void addGame(GameDataSet game) {
+        game.setId(String.valueOf(DBManager.addGame(game)));
+        games.add(game);
+    }
+
+    public void addStory(StoryDataSet story) {
+        story.setId(String.valueOf(DBManager.addStory(story)));
+        stories.add(story);
+    }
+
+    public void addVideo(VideoDataSet video) {
+        video.setId(String.valueOf(DBManager.addVideo(video)));
+        videos.add(video);
     }
 
 
 
-    public List<String> getArtistsNames() {
-        return artistsNames;
-    }
-
-    public List<String> getGenres() {
-        return genres;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public List<String> getPlatforms() {
-        return platforms;
-    }
+    // -----------------------------------------
+    // ---------- Get data from logic ----------
+    // -----------------------------------------
 
 
+    // ----- Get artists/genres/tags/platforms -----
+
+    public List<String> getArtistsGames() { return artistsGames; }
+
+    public List<String> getArtistsStories() { return artistsStories; }
+
+    public List<String> getArtistsVideos() { return artistsVideos; }
+
+    public List<String> getGenres() { return genres; }
+
+    public List<String> getTags() { return tags; }
+
+    public List<String> getPlatforms() { return platforms; }
 
 
-    public List<GameDataSet> getGames() {
-        return games;
-    }
+    // ----- Get games/stories/videos -----
 
-    public List<StoryDataSet> getStories() {
-        return stories;
-    }
-    public List<VideoDataSet> getVideos() {
-        return videos;
-    }
+    public List<GameDataSet> getGames() { return games; }
+
+    public List<StoryDataSet> getStories() { return stories; }
+
+    public List<VideoDataSet> getVideos() { return videos; }
+
+
+    // ----- Get database path data -----
+
+    public String getDBPath() { return App_PATH; }
+
+    public String getDBName() { return DB_Name; }
 
 }

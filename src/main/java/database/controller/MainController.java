@@ -1,41 +1,77 @@
 package database.controller;
 
 
-import database.model.propertyModels.DataSetBase;
+import database.controller.tabController.GamesTabController;
+import database.controller.tabController.StoriesTabController;
+import database.controller.tabController.VideosTabController;
 import database.model.propertyModels.GameDataSet;
-import database.logic.Logic;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import database.model.propertyModels.StoryDataSet;
+import database.model.propertyModels.VideoDataSet;
+import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
-public class MainController extends ControllerBase implements Initializable {
+public class MainController extends ControllerHelper implements Initializable {
+
+    // ---------- FXML ----------
+
 
     @FXML
-    private TableView<GameDataSet> tabViewMain;
-    @FXML
-    private Button BtnAddGame;
+    BorderPane rootPane;
 
+    // --- Header ---
+
+    // Menu Items
+    @FXML
+    MenuItem miOpen;
+    @FXML
+    MenuItem miNew;
+    // Buttons
+    @FXML
+    MFXButton btnMinimizeWindow;
+    @FXML
+    MFXButton btnChangeWindowMode;
+    @FXML
+    MFXButton btnCloseWindow;
+
+    // --- Tab Pane ---
+    @FXML
+    TabPane tabPane;
+    @FXML
+    Tab tabGames;
+    @FXML
+    Tab tabStories;
+    @FXML
+    Tab tabVideos;
+
+    // --- Footer ---
+    @FXML
+    Label lblStatus;
+    @FXML
+    Label lblCurrentPath;
+
+
+    // ---------- Non-FXML ----------
+
+    // Controllers
+    GamesTabController gamesTabController;
+    StoriesTabController storiesTabController;
+    VideosTabController videosTabController;
 
 
     public MainController (Stage stage) {
@@ -45,67 +81,156 @@ public class MainController extends ControllerBase implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         addListeners();
-        showGames();
+        initGamesTab();
+        initStoriesTab();
+        initVideosTab();
+        initMenuItems();
+        initWindowButtons();
+        initializeWindowDragging(stage, rootPane);
+        setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
+        updateLabels();
     }
 
     private void addListeners() {
-        BtnAddGame.setOnAction(event -> openAddGameWindow());
+
     }
 
-    private void openAddGameWindow() {
+
+
+    private void initGamesTab() {
         try {
-            Stage stage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/addGame.fxml"));
-            fxmlLoader.setController(new AddGameController(stage));
-            Parent root = fxmlLoader.load();
-            stage.setScene(new Scene(root));
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.show();
-
-            stage.setOnHidden(event -> showGames());
-
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/gamesTab.fxml"));
+            gamesTabController = new GamesTabController(stage, this);
+            fxmlLoader.setController(gamesTabController);
+            Parent content = fxmlLoader.load();
+            tabGames.setContent(content);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void showGames() {
-        tabViewMain.getColumns().clear();
-        List<String> fields = getFieldsFromClass(DataSetBase.class);
-        fields.addAll(getFieldsFromClass(GameDataSet.class));
-        initializeTableView(tabViewMain, fields);
-        addCellValueFactoryHelper();
-        ObservableList<GameDataSet> obsGameList = FXCollections.observableArrayList(logic.getGames());
-        tabViewMain.setItems(obsGameList);
+    private void initStoriesTab() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/storiesTab.fxml"));
+            storiesTabController = new StoriesTabController(stage, this);
+            fxmlLoader.setController(storiesTabController);
+            Parent content = fxmlLoader.load();
+            tabStories.setContent(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void addCellValueFactoryHelper() {
-        TableColumn<GameDataSet, String> tagsColumn = (TableColumn<GameDataSet, String>) getColumnByName(tabViewMain, "Tags");
-        tagsColumn.setCellValueFactory(data -> {
-            ListProperty<StringProperty> tags = data.getValue().tagsProperty();
-            String tagsString = tags.stream()
-                    .map(StringProperty::get)
-                    .collect(Collectors.joining(", "));
-            return new SimpleStringProperty(tagsString);
+    private void initVideosTab() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/videosTab.fxml"));
+            videosTabController = new VideosTabController(stage, this);
+            fxmlLoader.setController(videosTabController);
+            Parent content = fxmlLoader.load();
+            tabVideos.setContent(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initMenuItems() {
+        miNew.setOnAction(createNewDatabase());
+        miOpen.setOnAction(openDatabase());
+    }
+
+
+    private void initWindowButtons() {
+        btnMinimizeWindow.setOnAction(event -> stage.setIconified(true));
+        btnChangeWindowMode.setOnAction(event -> {
+            if (stage.isFullScreen()) {
+                stage.setFullScreen(false);
+                isDraggable = true;
+            } else {
+                stage.setFullScreen(true);
+                isDraggable = false;
+            }
         });
-        TableColumn<GameDataSet, String> ratingColumn = (TableColumn<GameDataSet, String>) getColumnByName(tabViewMain, "Ratings");
-        ratingColumn.setCellValueFactory(data -> {
-            MapProperty<String, StringProperty> ratings = data.getValue().ratingsProperty();
-            String ratingString = ratings.entrySet().stream()
-                    .map(entry -> entry.getKey() + ": " + entry.getValue().get())
-                    .collect(Collectors.joining(", "));
-            return new SimpleStringProperty(ratingString);
-        });
-    }
-
-    private <T> TableColumn<T, ?> getColumnByName(TableView<T> tableView, String columnName) {
-        return tableView.getColumns().stream()
-                .filter(column -> column.getText().equals(columnName))
-                .findFirst()
-                .orElse(null); // Falls keine Spalte gefunden wurde, wird null zurückgegeben
+        btnCloseWindow.setOnAction(event -> stage.close());
     }
 
 
+    // ----- Helper Methods -----
+
+    private EventHandler<ActionEvent> openDatabase() {
+        return event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooserHelper(fileChooser, "Open Database");
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null) {
+                logic.openDatabase(file.getPath());
+                updateData();
+            }
+        };
+    }
+
+    private EventHandler<ActionEvent> createNewDatabase() {
+        return event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooserHelper(fileChooser, "Create New Database");
+            File file = fileChooser.showSaveDialog(stage);
+            if (file != null) {
+                String path = file.getAbsolutePath();
+                // Add .db extension if not already present
+                if (!path.endsWith(".db")) {
+                    path += ".db";
+                    file = new File(path);
+                }
+                logic.createNewDatabase(file.getPath());
+                updateData();
+            }
+        };
+    }
+
+    private void fileChooserHelper(FileChooser fileChooser, String title) {
+        fileChooser.setTitle(title);
+        fileChooser.setInitialDirectory(new File(logic.getDBPath()));
+        // Set extension filter for .db files
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("SQLite Files (*.db)", "*.db");
+        fileChooser.getExtensionFilters().add(extFilter);
+    }
+
+    private void updateData() {
+        gamesTabController.showGames(FXCollections.observableArrayList(logic.getGames()));
+        storiesTabController.showStories(FXCollections.observableArrayList(logic.getStories()));
+        videosTabController.showVideos(FXCollections.observableArrayList(logic.getVideos()));
+        setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
+    }
+
+    private int getListSize(List<?> list) {
+        return list == null ? 0 : list.size();
+    }
+
+
+
+    // Getter
+
+    public TabPane getTabPane() { return tabPane; }
+
+
+    // Setter
+
+    public void setStatusCurrentMediaCount(List<GameDataSet> games, List<StoryDataSet> stories, List<VideoDataSet> videos) {
+        String status = "Games: " + getListSize(games) + "/" + getListSize(logic.getGames()) +
+                "  |  Stories: " + getListSize(stories) + "/" + getListSize(logic.getStories()) +
+                "  |  Videos: " + getListSize(videos) + "/" + getListSize(logic.getVideos());
+        lblStatus.setText(status);
+    }
+
+    public void updateCurrentPathLabel() {
+        lblCurrentPath.setText("Current Database: " + logic.getDBName());
+    }
+
+
+    // Updater
+
+    public void updateLabels() {
+        updateCurrentPathLabel();
+    }
 
 
 }
