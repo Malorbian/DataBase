@@ -1,8 +1,8 @@
 package database.database_manager;
 
-import database.model.StoryEntry;
 import database.enums.Discipline;
 import database.enums.State;
+import database.model.StoryEntry;
 
 import java.sql.*;
 import java.util.ArrayList;

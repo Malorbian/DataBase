@@ -1,10 +1,8 @@
 package database.controller.addController;
 
-import database.controller.ControllerHelper;
 import database.enums.Discipline;
 import database.enums.State;
 import database.enums.TableNames;
-import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.beans.binding.BooleanBinding;

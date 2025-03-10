@@ -1,6 +1,5 @@
 package database.controller.addController;
 
-import database.controller.ControllerHelper;
 import database.enums.Discipline;
 import database.enums.State;
 import database.enums.TableNames;
@@ -8,7 +7,6 @@ import database.model.propertyModels.StoryDataSet;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
 public class AddStoryController extends AddControllerHelper {

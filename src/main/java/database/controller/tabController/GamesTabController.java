@@ -1,8 +1,7 @@
 package database.controller.tabController;
 
-import database.controller.addController.AddGameController;
 import database.controller.MainController;
-import database.enums.Discipline;
+import database.controller.addController.AddGameController;
 import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -15,15 +14,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 

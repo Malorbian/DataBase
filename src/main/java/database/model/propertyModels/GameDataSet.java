@@ -3,7 +3,9 @@ package database.model.propertyModels;
 import database.enums.State;
 import database.model.GameEntry;
 import database.model.PlayedEntry;
-import javafx.beans.property.*;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import java.util.List;
 import java.util.Map;

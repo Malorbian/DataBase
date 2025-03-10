@@ -1,29 +1,19 @@
 package database.controller.tabController;
 
-import com.sun.glass.ui.Window;
 import database.controller.ControllerHelper;
 import database.controller.MainController;
-import database.controller.addController.AddGameController;
-import database.controller.addController.AddStoryController;
-import database.controller.addController.AddVideoController;
-import database.enums.Discipline;
-import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
-import java.beans.EventHandler;
 import java.io.IOException;
 
 public abstract class TabControllerHelper extends ControllerHelper {

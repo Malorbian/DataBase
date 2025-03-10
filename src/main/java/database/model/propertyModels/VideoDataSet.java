@@ -2,7 +2,6 @@ package database.model.propertyModels;
 
 import database.enums.State;
 import database.model.VideoEntry;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.List;

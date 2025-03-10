@@ -3,7 +3,10 @@ package database.database_manager;
 import database.enums.Discipline;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class DBGames_Tags extends DBHelper {
 

@@ -1,7 +1,7 @@
 package database.database_manager;
 
-import database.model.ArtistEntry;
 import database.enums.Discipline;
+import database.model.ArtistEntry;
 
 import java.sql.*;
 import java.util.ArrayList;

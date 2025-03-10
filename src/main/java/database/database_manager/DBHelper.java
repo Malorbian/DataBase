@@ -1,7 +1,6 @@
 package database.database_manager;
 
 import database.enums.Discipline;
-import database.enums.TableNames;
 import database.logic.Logic;
 
 import java.nio.file.Paths;
