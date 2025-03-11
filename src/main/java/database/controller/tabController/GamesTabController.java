@@ -2,6 +2,7 @@ package database.controller.tabController;
 
 import database.controller.MainController;
 import database.controller.addController.AddGameController;
+import database.logic.filter.GameFilter;
 import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -37,6 +38,8 @@ public class GamesTabController extends TabControllerHelper {
     @FXML
     MFXDatePicker dpFilterDate;
 
+    GameFilter filter;
+
 
     public GamesTabController(Stage stage, MainController parentController) {
         super(stage, parentController);
@@ -45,10 +48,12 @@ public class GamesTabController extends TabControllerHelper {
 
     @Override
     void init() {
-
         initGameTable(tvData);
-        showGames(FXCollections.observableArrayList(logic.getGames()));
+        filter = new GameFilter(this);
+        showGames(filter.getFilteredGames());
         btnAddEntry.setOnAction(event -> openAddGameWindow());
+
+
     }
 
 

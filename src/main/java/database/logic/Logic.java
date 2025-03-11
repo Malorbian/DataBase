@@ -122,24 +122,25 @@ public class Logic {
     // ----- Add artists/genres/tags/platforms -----
 
     public void addPlatform(String platformName) {
-        if (platforms.contains(platformName)) { return; }
+        if (platformName == null || platforms.contains(platformName)) { return; }
         platforms.add(platformName);
         DBManager.addPlatform(platformName);
     }
 
     public void addTag(String tag) {
-        if (tags.contains(tag)) { return; }
+        if (tag == null || tags.contains(tag)) { return; }
         tags.add(tag);
         DBManager.addTag(tag);
     }
 
     public void addGenre(String genre) {
-        if (genres.contains(genre)) { return; }
+        if (genre == null || genres.contains(genre)) { return; }
         genres.add(genre);
         DBManager.addGenre(genre);
     }
 
     public void addArtistName(ArtistEntry artist) {
+        if (artist.getName() == null) { return; }
         switch (Discipline.valueOf(artist.getDiscipline())) {
             case GAMES:
                 if (artistsGames.contains(artist.getName())) { return; }

@@ -2,6 +2,7 @@ package database.controller.tabController;
 
 import database.controller.ControllerHelper;
 import database.controller.MainController;
+import database.enums.State;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -60,6 +61,11 @@ public abstract class TabControllerHelper extends ControllerHelper {
         // Bind Size of GridPane to TabPane
         gridPaneRoot.prefWidthProperty().bind(parentController.getTabPane().widthProperty());
         gridPaneRoot.prefHeightProperty().bind(parentController.getTabPane().heightProperty());
+
+        initializeCheckListComboBox(fcBoxFilterGenres, logic.getGenres());
+        initializeCheckListComboBox(fcBoxFilterStates, State.getValues());
+        initializeCheckListComboBox(fcBoxFilterTags, logic.getTags());
+
         init();
     }
 
@@ -85,6 +91,16 @@ public abstract class TabControllerHelper extends ControllerHelper {
             e.printStackTrace();
         }
     }
+
+    public MFXTextField getFilterObjectTitle() { return tfFilterName; }
+
+    public MFXTextField getFilterObjectArtist() { return tfFilterArtist; }
+
+    public MFXFilterComboBox<String> getFilterObjectGenres() { return fcBoxFilterGenres; }
+
+    public MFXFilterComboBox<String> getFilterObjectStates() { return fcBoxFilterStates; }
+
+    public MFXFilterComboBox<String> getFilterObjectTags() { return fcBoxFilterTags; }
 
 
 }

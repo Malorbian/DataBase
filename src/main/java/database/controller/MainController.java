@@ -83,7 +83,6 @@ public class MainController extends ControllerHelper implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        addListeners();
         initGamesTab();
         initStoriesTab();
         initVideosTab();
@@ -91,13 +90,8 @@ public class MainController extends ControllerHelper implements Initializable {
         initWindowButtons();
         initializeWindowDragging(stage, rootPane);
         setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
-        updateLabels();
+        updateCurrentPathLabel();
     }
-
-    private void addListeners() {
-
-    }
-
 
 
     private void initGamesTab() {
@@ -167,6 +161,7 @@ public class MainController extends ControllerHelper implements Initializable {
             if (file != null) {
                 logic.openDatabase(file.getPath());
                 updateData();
+                updateCurrentPathLabel();
             }
         };
     }
@@ -185,6 +180,7 @@ public class MainController extends ControllerHelper implements Initializable {
                 }
                 logic.createNewDatabase(file.getPath());
                 updateData();
+                updateCurrentPathLabel();
             }
         };
     }
@@ -198,7 +194,7 @@ public class MainController extends ControllerHelper implements Initializable {
     }
 
     private void updateData() {
-        gamesTabController.showGames(FXCollections.observableArrayList(logic.getGames()));
+        //gamesTabController.showGames(FXCollections.observableArrayList(logic.getGames()));
         storiesTabController.showStories(FXCollections.observableArrayList(logic.getStories()));
         videosTabController.showVideos(FXCollections.observableArrayList(logic.getVideos()));
         setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
@@ -226,13 +222,6 @@ public class MainController extends ControllerHelper implements Initializable {
 
     public void updateCurrentPathLabel() {
         lblCurrentPath.setText("Current Database: " + logic.getDBName());
-    }
-
-
-    // Updater
-
-    public void updateLabels() {
-        updateCurrentPathLabel();
     }
 
 

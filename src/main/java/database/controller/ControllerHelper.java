@@ -3,25 +3,31 @@ package database.controller;
 import database.enums.Discipline;
 import database.enums.TableNames;
 import database.logic.Logic;
-import io.github.palexdev.materialfx.controls.MFXCheckListView;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
-import io.github.palexdev.materialfx.controls.MFXTableColumn;
-import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.SetChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ControllerHelper {
 
@@ -37,6 +43,9 @@ public class ControllerHelper {
         logic = Logic.getInstance();
         this.stage = stage;
     }
+
+
+    // ----- Utility Methods -----
 
 
     // Get all fields from a class
@@ -61,6 +70,9 @@ public class ControllerHelper {
             }
         });
     }
+
+
+    // ----- Editable ComboBoxes -----
 
     protected void initializeComboBox(MFXComboBox<String> comboBox, List<String> items) {
         ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
@@ -92,10 +104,62 @@ public class ControllerHelper {
         initializeEditableComboBox(comboBox, items, tableName, null, statusLabel);
     }
 
+
+    // ----- CheckListView -----
+
     protected void initializeCheckListView(MFXCheckListView<String> checkListView, List<String> items) {
         ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
         checkListView.setItems(obsItemList);
     }
+
+
+    // ----- CheckList in ComboBox -----
+
+    /**
+     * Initializes a ComboBox with a CheckListView popup. Code for positioning the popup is a patchwork solution and may not work in all cases.
+     * TODO: fix popup positioning and height calculation
+     * @param comboBox MFXFilterComboBox that will contain the CheckListView
+     * @param items List<String of items to be displayed in the CheckListView
+     */
+    protected void initializeCheckListComboBox(MFXFilterComboBox<String> comboBox, List<String> items) {
+        ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
+
+        MFXCheckListView<String> checkListView = new MFXCheckListView<>(obsItemList);
+        checkListView.setItems(obsItemList);
+        checkListView.getSelectionModel().getSelection().addListener((MapChangeListener<? super Integer, ? super String>) change -> {
+            String text = change.getMap().values().stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.joining(", "));
+            comboBox.setText(text);
+        });
+
+
+        Popup popup = new Popup();
+        popup.getContent().add(checkListView);
+        popup.setAutoHide(true);
+
+        comboBox.setUserData(checkListView);
+        comboBox.setOnMousePressed(event -> {
+            if (!comboBox.isShowing()) {
+                double xPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinX() - 15.0;
+                double yPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinY() + comboBox.getHeight();
+
+                checkListView.setMinWidth(comboBox.getWidth());
+                checkListView.setMaxWidth(comboBox.getWidth());
+                double itemHeight = 32.0;
+                double clvHeight = Math.min(itemHeight * obsItemList.size(), 300);
+                checkListView.setMaxHeight(clvHeight);
+
+                popup.show(stage, xPos, yPos);
+            } else {
+                popup.hide();
+            };
+        });
+
+    }
+
+
+    // ----- TableView -----
 
     protected <T> void initializeTableView(TableView<T> tableView, List<String> columnNames) {
         for (String columnName : columnNames) {
@@ -111,47 +175,6 @@ public class ControllerHelper {
         }
         for (int i = 0; i < columnSizes.size(); i++) {
             tableView.getColumns().get(i).setPrefWidth(columnSizes.get(i) * tableView.getPrefWidth());
-        }
-    }
-
-    protected <T> void initializeMFXTableView(MFXTableView<T> tableView, List<String> columnNames, List<Double> columnSizes) {
-        double tableWidth = tableView.getPrefWidth();
-        addMFXColumnsToTable(tableView, columnNames, columnSizes, t -> {
-            List<StringProperty> properties = new ArrayList<>();
-            for (String columnName : columnNames) {
-                try {
-                    Field field = t.getClass().getDeclaredField(columnName);
-                    field.setAccessible(true);
-                    properties.add((StringProperty) field.get(t));
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-            return properties;
-        });
-        //setColumnSize(tableView, columnSizes, tableWidth);
-    }
-
-    protected <T> void setMFXColumnSizes(MFXTableView<T> tableView, List<Double> sizes, double tableWidth) {
-        if (sizes.size() != tableView.getTableColumns().size()) {
-            throw new IllegalArgumentException("Sizes list must have the same size as the number of columns in the table");
-        }
-        for (int i = 0; i < sizes.size(); i++) {
-            tableView.getTableColumns().get(i).setPrefWidth(90);
-            tableView.getTableColumns().get(i).setMaxWidth(90);
-        }
-    }
-
-    private <T> void addMFXColumnsToTable(MFXTableView<T> tableView, List<String> columnNames, List<Double> columnSizes, Function<T, List<StringProperty>> propertyExtractor) {
-        for (int i = 0; i < columnNames.size(); i++) {
-            final int columnIndex = i; // Muss final oder effectively final sein für Lambda
-            MFXTableColumn<T> column = new MFXTableColumn<>(columnNames.get(i), true);
-
-            column.setRowCellFactory(item -> new MFXTableRowCell<>(t -> propertyExtractor.apply(t).get(columnIndex).get()));
-            column.columnResizableProperty().set(false);
-            column.setMaxWidth(90);
-            column.setPrefWidth(90);
-            tableView.getTableColumns().add(column);
         }
     }
 
