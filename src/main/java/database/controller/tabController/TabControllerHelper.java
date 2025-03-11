@@ -3,6 +3,7 @@ package database.controller.tabController;
 import database.controller.ControllerHelper;
 import database.controller.MainController;
 import database.enums.State;
+import database.enums.TriState;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -16,6 +17,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class TabControllerHelper extends ControllerHelper {
 
@@ -62,9 +65,9 @@ public abstract class TabControllerHelper extends ControllerHelper {
         gridPaneRoot.prefWidthProperty().bind(parentController.getTabPane().widthProperty());
         gridPaneRoot.prefHeightProperty().bind(parentController.getTabPane().heightProperty());
 
-        initializeCheckListComboBox(fcBoxFilterGenres, logic.getGenres());
+        initTriStateListViewComboBox(fcBoxFilterGenres, logic.getGenres());
         initializeCheckListComboBox(fcBoxFilterStates, State.getValues());
-        initializeCheckListComboBox(fcBoxFilterTags, logic.getTags());
+        initTriStateListViewComboBox(fcBoxFilterTags, logic.getTags());
 
         init();
     }

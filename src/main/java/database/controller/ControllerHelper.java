@@ -1,30 +1,26 @@
 package database.controller;
 
+import database.controller.customFXElements.TriStateListCell;
 import database.enums.Discipline;
 import database.enums.TableNames;
+import database.enums.TriState;
 import database.logic.Logic;
 import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.controls.cell.MFXListCell;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
-import javafx.collections.SetChangeListener;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.collections.*;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -149,6 +145,47 @@ public class ControllerHelper {
                 double itemHeight = 32.0;
                 double clvHeight = Math.min(itemHeight * obsItemList.size(), 300);
                 checkListView.setMaxHeight(clvHeight);
+
+                popup.show(stage, xPos, yPos);
+            } else {
+                popup.hide();
+            };
+        });
+
+    }
+
+
+    // ----- TriStateCheckList ComboBox -----
+    protected void initTriStateListViewComboBox(MFXFilterComboBox<String> comboBox, List<String> items) {
+        ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
+        
+        // init TriState Map
+        ObservableMap<String, TriState> selectionMap = FXCollections.observableHashMap();
+        items.forEach(item -> selectionMap.put(item, TriState.NEUTRAL));
+
+        // TriStateListView
+        MFXListView<String> listView = new MFXListView<>();
+        listView.getItems().addAll(items);
+
+        // Cell Factory
+        listView.setCellFactory(name -> new TriStateListCell(name, selectionMap, listView));
+
+        // Combobox as Dropdown for ListView
+        Popup popup = new Popup();
+        popup.getContent().add(listView);
+        popup.setAutoHide(true);
+
+        comboBox.setUserData(selectionMap);
+        comboBox.setOnMousePressed(event -> {
+            if (!comboBox.isShowing()) {
+                double xPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinX() - 15.0;
+                double yPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinY() + comboBox.getHeight();
+
+                listView.setMinWidth(comboBox.getWidth());
+                listView.setMaxWidth(comboBox.getWidth());
+                double itemHeight = 32.0;
+                double lvHeight = Math.min(itemHeight * items.size(), 300);
+                listView.setMaxHeight(lvHeight);
 
                 popup.show(stage, xPos, yPos);
             } else {
