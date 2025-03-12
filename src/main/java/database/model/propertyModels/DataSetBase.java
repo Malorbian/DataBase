@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataSetBase {
+public class DataSetBase implements DataSet {
     protected StringProperty id = new SimpleStringProperty();
     protected StringProperty title = new SimpleStringProperty();
     protected StringProperty artist = new SimpleStringProperty();

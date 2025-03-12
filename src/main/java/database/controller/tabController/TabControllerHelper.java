@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class TabControllerHelper extends ControllerHelper {
+public abstract class TabControllerHelper extends ControllerHelper implements TabController{
 
     // -----------------------------------
     // ---------- FXML Elements ----------

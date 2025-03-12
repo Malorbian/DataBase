@@ -2,7 +2,7 @@ package database.controller.tabController;
 
 import database.controller.MainController;
 import database.controller.addController.AddGameController;
-import database.logic.filter.GameFilter;
+import database.logic.Filter;
 import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -38,7 +38,7 @@ public class GamesTabController extends TabControllerHelper {
     @FXML
     MFXDatePicker dpFilterDate;
 
-    GameFilter filter;
+    Filter<GamesTabController, GameDataSet> filter;
 
 
     public GamesTabController(Stage stage, MainController parentController) {
@@ -49,10 +49,9 @@ public class GamesTabController extends TabControllerHelper {
     @Override
     void init() {
         initGameTable(tvData);
-        filter = new GameFilter(this);
-        showGames(filter.getFilteredGames());
+        filter = new Filter<>(this, logic.getGames());
+        showGames(filter.getFilteredData());
         btnAddEntry.setOnAction(event -> openAddGameWindow());
-
 
     }
 
