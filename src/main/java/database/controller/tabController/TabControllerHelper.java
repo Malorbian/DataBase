@@ -3,7 +3,8 @@ package database.controller.tabController;
 import database.controller.ControllerHelper;
 import database.controller.MainController;
 import database.enums.State;
-import database.enums.TriState;
+import database.logic.Filter;
+import database.model.propertyModels.DataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -11,16 +12,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-public abstract class TabControllerHelper extends ControllerHelper implements TabController{
+public abstract class TabControllerHelper<T extends DataSet, U extends TabController> extends ControllerHelper implements TabController{
 
     // -----------------------------------
     // ---------- FXML Elements ----------
@@ -30,7 +31,11 @@ public abstract class TabControllerHelper extends ControllerHelper implements Ta
     @FXML
     GridPane gridPaneRoot;
 
-    // Game Table Column Selection
+    // Table View
+    @FXML
+    TableView<T> tvData;
+
+    // Table Column Selection
     @FXML
     MFXFilterComboBox<String> fcBoxTableColumns;
 
@@ -49,6 +54,8 @@ public abstract class TabControllerHelper extends ControllerHelper implements Ta
     MFXFilterComboBox<String> fcBoxFilterStates;
     @FXML
     MFXFilterComboBox<String> fcBoxFilterTags;
+
+    Filter<U, T> filter;
 
 
     MainController parentController;

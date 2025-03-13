@@ -3,6 +3,7 @@ package database.controller.tabController;
 import database.controller.MainController;
 import database.controller.addController.AddGameController;
 import database.logic.Filter;
+import database.model.propertyModels.DataSet;
 import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -22,14 +23,11 @@ import javafx.stage.Stage;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GamesTabController extends TabControllerHelper {
+public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTabController> {
 
     // -----------------------------------
     // ---------- FXML Elements ----------
     // -----------------------------------
-
-    @FXML
-    TableView<GameDataSet> tvData;
 
     @FXML
     MFXButton btnFilterPlayed;
