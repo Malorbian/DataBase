@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTabController> {
+public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTabController, AddGameController> {
 
     // -----------------------------------
     // ---------- FXML Elements ----------
@@ -36,8 +36,6 @@ public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTa
     @FXML
     MFXDatePicker dpFilterDate;
 
-    Filter<GamesTabController, GameDataSet> filter;
-
 
     public GamesTabController(Stage stage, MainController parentController) {
         super(stage, parentController);
@@ -46,43 +44,13 @@ public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTa
 
     @Override
     void init() {
-        initGameTable(tvData);
+        initTable(getFieldsFromClass(GameDataSet.class));
+        addCellValueFactoryHelper(tvData);
+
         filter = new Filter<>(this, logic.getGames());
-        showGames(filter.getFilteredData());
-        btnAddEntry.setOnAction(event -> openAddGameWindow());
+        btnAddEntry.setOnAction(event -> openAddEntryWindow("/fxml/addGame.fxml", new AddGameController(stage)));
 
-    }
-
-
-    public void showGames(ObservableList<GameDataSet> obsGameList) {
-        tvData.setItems(obsGameList);
-    }
-
-
-    private void initGameTable(TableView<GameDataSet> tableView) {
-        tableView.getColumns().clear();
-        List<String> fields = getFieldsFromClass(DataSetBase.class);
-        fields.addAll(getFieldsFromClass(GameDataSet.class));
-        initializeTableView(tableView, fields);
-        addCellValueFactoryHelper(tableView);
-    }
-
-
-    // --- Setup AddGame Window ---
-
-    // Implement these methods so openAddGameWindow() can be called
-    @Override
-    void setOnHiddenEvent() {
-        showGames(FXCollections.observableArrayList(logic.getGames()));
-    }
-
-    @Override
-    void setAddEntryController(FXMLLoader fxmlLoader, Stage stage) {
-         fxmlLoader.setController(new AddGameController(stage));
-    }
-
-    private void openAddGameWindow() {
-        openAddEntryWindow("/fxml/addGame.fxml");
+        updateTable();
     }
 
 

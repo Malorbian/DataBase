@@ -2,12 +2,19 @@ package database.controller.tabController;
 
 import database.controller.ControllerHelper;
 import database.controller.MainController;
+import database.controller.addController.AddEntryController;
+import database.controller.addController.AddGameController;
 import database.enums.State;
 import database.logic.Filter;
 import database.model.propertyModels.DataSet;
+import database.model.propertyModels.DataSetBase;
+import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,8 +27,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.List;
 
-public abstract class TabControllerHelper<T extends DataSet, U extends TabController> extends ControllerHelper implements TabController{
+public abstract class TabControllerHelper<T extends DataSet, U extends TabController, V extends AddEntryController> extends ControllerHelper implements TabController{
 
     // -----------------------------------
     // ---------- FXML Elements ----------
@@ -57,13 +65,14 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
 
     Filter<U, T> filter;
 
-
     MainController parentController;
 
 
     public TabControllerHelper(Stage stage, MainController parentController) {
         super(stage);
         this.parentController = parentController;
+
+
     }
 
 
@@ -79,28 +88,38 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
         init();
     }
 
+    void initTable(List<String> typeFields) {
+        tvData.getColumns().clear();
+        List<String> fields = getFieldsFromClass(DataSetBase.class);
+        fields.addAll(typeFields);
+        initializeTableView(tvData, fields);
+    }
+
+
     abstract void init();
 
-    abstract void setOnHiddenEvent();
 
-    abstract void setAddEntryController(FXMLLoader fxmlLoader, Stage stage);
-
-    void openAddEntryWindow(String fxmlPath) {
+    void openAddEntryWindow(String fxmlPath, V controller) {
         try {
             Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
-            setAddEntryController(fxmlLoader, stage);
+            fxmlLoader.setController(controller);
             Parent root = fxmlLoader.load();
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(this.stage);
             stage.setScene(new Scene(root));
             stage.show();
-            stage.setOnHidden(event -> setOnHiddenEvent());
+            stage.setOnHidden(event -> updateTable());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    void updateTable() {
+        tvData.setItems(filter.getFilteredData());
+    }
+
 
     public MFXTextField getFilterObjectTitle() { return tfFilterName; }
 

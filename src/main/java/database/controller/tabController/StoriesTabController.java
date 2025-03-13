@@ -13,10 +13,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class StoriesTabController extends  TabControllerHelper {
-
-    @FXML
-    TableView<StoryDataSet> tvData;
+public class StoriesTabController extends  TabControllerHelper<StoryDataSet, StoriesTabController, AddStoryController> {
 
     public StoriesTabController(Stage stage, MainController parentController) {
         super(stage, parentController);
@@ -24,37 +21,12 @@ public class StoriesTabController extends  TabControllerHelper {
 
     @Override
     void init() {
-        initStoryTable(tvData);
-        showStories(FXCollections.observableArrayList(logic.getStories()));
-        btnAddEntry.setOnAction(event -> openAddStoryWindow());
+        initTable(getFieldsFromClass(StoryDataSet.class));
+
+        // TODO: filter
+        btnAddEntry.setOnAction(event -> openAddEntryWindow("/fxml/addStory.fxml", new AddStoryController(stage)));
+
+        updateTable();
     }
-
-    public void showStories(ObservableList<StoryDataSet> obsStoryList) {
-        tvData.setItems(obsStoryList);
-    }
-
-    private void initStoryTable (TableView<StoryDataSet> tableView) {
-        tableView.getColumns().clear();
-        List<String> fields = getFieldsFromClass(DataSetBase.class);
-        initializeTableView(tableView, fields);
-    }
-
-
-    // --- Setup Add Story Window ---
-
-    @Override
-    void setOnHiddenEvent() {
-        showStories(FXCollections.observableArrayList(logic.getStories()));
-    }
-
-    @Override
-    void setAddEntryController(FXMLLoader fxmlLoader, Stage stage) {
-        fxmlLoader.setController(new AddStoryController(stage));
-    }
-
-    private void openAddStoryWindow() {
-        openAddEntryWindow("/fxml/addStory.fxml");
-    }
-
 
 }

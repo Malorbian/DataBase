@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class VideosTabController extends TabControllerHelper{
+public class VideosTabController extends TabControllerHelper<VideoDataSet, VideosTabController, AddVideoController> {
 
     @FXML
     TableView<VideoDataSet> tvData;
@@ -30,36 +30,16 @@ public class VideosTabController extends TabControllerHelper{
 
     @Override
     void init() {
-        initVideoTable(tvData);
-        showVideos(FXCollections.observableArrayList(logic.getVideos()));
-        btnAddEntry.setOnAction(event -> openAddVideoWindow());
+        initTable(getFieldsFromClass(VideoDataSet.class));
+
+        // TODO: filter
+        btnAddEntry.setOnAction(event -> openAddEntryWindow("/fxml/addVideo.fxml", new AddVideoController(stage)));
+
+        updateTable();
     }
 
     public void showVideos(ObservableList<VideoDataSet> obsVideoList) {
         tvData.setItems(obsVideoList);
     }
 
-    private void initVideoTable(TableView<VideoDataSet> tableView) {
-        tableView.getColumns().clear();
-        List<String> fields = getFieldsFromClass(DataSetBase.class);
-        fields.addAll(getFieldsFromClass(VideoDataSet.class));
-        initializeTableView(tableView, fields);
-    }
-
-
-    // --- Setup Add Video Window ---
-
-    @Override
-    void setOnHiddenEvent() {
-        showVideos(FXCollections.observableArrayList(logic.getVideos()));
-    }
-
-    @Override
-    void setAddEntryController(FXMLLoader fxmlLoader, Stage stage) {
-        fxmlLoader.setController(new AddVideoController(stage));
-    }
-
-    private void openAddVideoWindow() {
-        openAddEntryWindow("/fxml/addVideo.fxml");
-    }
 }
