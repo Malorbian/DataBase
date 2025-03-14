@@ -1,7 +1,9 @@
 package database.controller.tabController;
 
 import database.controller.MainController;
+import database.controller.addController.AddGameController;
 import database.controller.addController.AddVideoController;
+import database.logic.Filter;
 import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.VideoDataSet;
 import javafx.collections.FXCollections;
@@ -33,13 +35,15 @@ public class VideosTabController extends TabControllerHelper<VideoDataSet, Video
         initTable(getFieldsFromClass(VideoDataSet.class));
 
         // TODO: filter
-        btnAddEntry.setOnAction(event -> openAddEntryWindow("/fxml/addVideo.fxml", new AddVideoController(stage)));
+        filter = new Filter<>(this, logic.getVideos());
+        Stage stage = new Stage();
+        btnAddEntry.setOnAction(event -> openAddVideoWindow());
 
         updateTable();
     }
 
-    public void showVideos(ObservableList<VideoDataSet> obsVideoList) {
-        tvData.setItems(obsVideoList);
+    void openAddVideoWindow() {
+        Stage stage = new Stage();
+        openAddEntryWindow("/fxml/addVideo.fxml", new AddVideoController(stage), stage);
     }
-
 }

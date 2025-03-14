@@ -4,16 +4,20 @@ import database.enums.Discipline;
 import database.enums.State;
 import database.enums.TableNames;
 import database.model.propertyModels.StoryDataSet;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
 public class AddStoryController extends AddControllerHelper {
 
+
     public AddStoryController(Stage stage) {
         super(stage);
     }
+
 
     @Override
     void initArtistsComboBox() {

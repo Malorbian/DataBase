@@ -2,6 +2,8 @@ package database.database_manager;
 
 import database.enums.Discipline;
 import database.model.ArtistEntry;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -45,8 +47,8 @@ class DBArtists extends DBHelper {
         }
     }
 
-    public static List<ArtistEntry> getAllArtists() {
-        List<ArtistEntry> artists = new ArrayList<>();
+    public static ObservableList<ArtistEntry> getAllArtists() {
+        ObservableList<ArtistEntry> artists = FXCollections.observableArrayList();
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {
             String sql = "SELECT * FROM artists";

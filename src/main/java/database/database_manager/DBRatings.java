@@ -1,6 +1,8 @@
 package database.database_manager;
 
 import database.model.RatingEntry;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -96,9 +98,9 @@ class DBRatings extends DBHelper {
         }
     }
 
-    protected static List<String> getAllPlatforms() {
+    protected static ObservableList<String> getAllPlatforms() {
         String sql = "PRAGMA table_info(ratings)";
-        List<String> platforms = new ArrayList<>();
+        ObservableList<String> platforms = FXCollections.observableArrayList();
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);

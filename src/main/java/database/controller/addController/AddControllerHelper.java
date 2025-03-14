@@ -1,13 +1,14 @@
 package database.controller.addController;
 
 import database.controller.ControllerHelper;
+import database.enums.Discipline;
 import database.enums.State;
 import database.enums.TableNames;
-import io.github.palexdev.materialfx.controls.MFXCheckListView;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
-import io.github.palexdev.materialfx.controls.MFXTextField;
-import io.github.palexdev.materialfx.controls.MFXToggleButton;
+import io.github.palexdev.materialfx.controls.*;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import java.util.Map;
 
 public abstract class AddControllerHelper extends ControllerHelper implements AddEntryController{
 
@@ -25,6 +28,8 @@ public abstract class AddControllerHelper extends ControllerHelper implements Ad
 
     // Entry Column
     @FXML
+    MFXComboBox<String> cbType;
+    @FXML
     MFXTextField tfName;
     @FXML
     MFXComboBox<String> cbArtist;
@@ -32,6 +37,8 @@ public abstract class AddControllerHelper extends ControllerHelper implements Ad
     MFXComboBox<String> cbGenre;
     @FXML
     MFXComboBox<String> cbState;
+    @FXML
+    MFXFilterComboBox<String> fcbRatings;
     @FXML
     MFXTextField tfLink;
 
@@ -58,7 +65,7 @@ public abstract class AddControllerHelper extends ControllerHelper implements Ad
         initializeWindowDragging(stage, rootPane);
 
         // Initialize Cancel/Save buttons
-        btnCancel.setOnAction(event -> btnCancel.getScene().getWindow().hide());
+        btnCancel.setOnAction(event -> stage.hide());
         initializeSaveEntryButton();
 
         // Initialize Pinning ToggleButton
@@ -70,10 +77,11 @@ public abstract class AddControllerHelper extends ControllerHelper implements Ad
         // Initialize Tags CheckListViews
         initializeCheckListView(clvTags, logic.getTags());
 
-        // Initialize Artist/Genre/State Combo boxes
+        // Initialize Combo boxes
         initArtistsComboBox();
         initializeEditableComboBox(cbGenre, logic.getGenres(), TableNames.GENRE, lblStatus);
         initializeComboBox(cbState, State.getValues());
+        initTfInputListViewComboBox(fcbRatings, logic.getPlatforms());
 
         // Initialize Add Tag Functionality
         tfAddTag.setOnAction(event -> {
@@ -84,16 +92,27 @@ public abstract class AddControllerHelper extends ControllerHelper implements Ad
             tfAddTag.clear();
         });
 
+        // TODO: Implement Ratings
     }
+
+    // TODO: Add optional implementation method for Type for Literature/Video
 
     private void initializeSaveEntryButton() {
         // Disable button until all necessary fields are filled
         btnSaveEntry.setDisable(true);
-        BooleanBinding saveGameBinding = getSaveButtonRequirements();
+        BooleanBinding saveEntryBinding = getSaveButtonRequirements();
         // Bind button to text fields and combobox
-        btnSaveEntry.disableProperty().bind(saveGameBinding.not());
+        btnSaveEntry.disableProperty().bind(saveEntryBinding.not());
         // Add action event to button to add game to database
         btnSaveEntry.setOnAction(getSaveEntryHandler());
+    }
+
+    Map<String, String> ratingsUserDataCast(Object object) {
+        if (object instanceof ObservableMap<?, ?>) {
+            return (ObservableMap<String, String>) object;
+        } else {
+            throw new IllegalArgumentException("UserData is not a ObservableMap: " + object.getClass());
+        }
     }
 
     abstract void initArtistsComboBox();

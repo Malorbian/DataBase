@@ -17,6 +17,7 @@ public class DataSetBase implements DataSet {
     protected StringProperty state = new SimpleStringProperty();
     protected StringProperty link = new SimpleStringProperty();
     protected ListProperty<StringProperty> tags;
+    //private MapProperty<String, StringProperty> ratings;
 
     public DataSetBase(int id,
                        String title,

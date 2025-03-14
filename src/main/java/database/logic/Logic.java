@@ -7,6 +7,8 @@ import database.model.ArtistEntry;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,15 +18,15 @@ import java.util.List;
 public class Logic {
     private static Logic instance;
 
-    private List<GameDataSet> games;
-    private List<StoryDataSet> stories;
-    private List<VideoDataSet> videos;
-    private List<String> genres;
-    private List<String> tags;
-    private List<String> artistsGames;
-    private List<String> artistsStories;
-    private List<String> artistsVideos;
-    private List<String> platforms;
+    private ObservableList<GameDataSet> games;
+    private ObservableList<StoryDataSet> stories;
+    private ObservableList<VideoDataSet> videos;
+    private ObservableList<String> genres;
+    private ObservableList<String> tags;
+    private ObservableList<String> artistsGames;
+    private ObservableList<String> artistsStories;
+    private ObservableList<String> artistsVideos;
+    private ObservableList<String> platforms;
 
 
     protected static final String DB_Default_Name = "Data.db";
@@ -52,9 +54,9 @@ public class Logic {
     // ----- Constructor Helper -----
 
     private void fillArtistLists() {
-        artistsGames = new ArrayList<>();
-        artistsStories = new ArrayList<>();
-        artistsVideos = new ArrayList<>();
+        artistsGames = FXCollections.observableArrayList();
+        artistsStories = FXCollections.observableArrayList();
+        artistsVideos = FXCollections.observableArrayList();
         for (ArtistEntry artist : DBManager.getArtists()) {
             switch (Discipline.valueOf(artist.getDiscipline())) {
                 case GAMES:
@@ -213,26 +215,26 @@ public class Logic {
 
     // ----- Get artists/genres/tags/platforms -----
 
-    public List<String> getArtistsGames() { return artistsGames; }
+    public ObservableList<String> getArtistsGames() { return artistsGames; }
 
-    public List<String> getArtistsStories() { return artistsStories; }
+    public ObservableList<String> getArtistsStories() { return artistsStories; }
 
-    public List<String> getArtistsVideos() { return artistsVideos; }
+    public ObservableList<String> getArtistsVideos() { return artistsVideos; }
 
-    public List<String> getGenres() { return genres; }
+    public ObservableList<String> getGenres() { return genres; }
 
-    public List<String> getTags() { return tags; }
+    public ObservableList<String> getTags() { return tags; }
 
-    public List<String> getPlatforms() { return platforms; }
+    public ObservableList<String> getPlatforms() { return platforms; }
 
 
     // ----- Get games/stories/videos -----
 
-    public List<GameDataSet> getGames() { return games; }
+    public ObservableList<GameDataSet> getGames() { return games; }
 
-    public List<StoryDataSet> getStories() { return stories; }
+    public ObservableList<StoryDataSet> getStories() { return stories; }
 
-    public List<VideoDataSet> getVideos() { return videos; }
+    public ObservableList<VideoDataSet> getVideos() { return videos; }
 
 
     // ----- Get database path data -----

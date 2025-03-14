@@ -1,5 +1,8 @@
 package database.database_manager;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +42,8 @@ class DBTags extends DBHelper {
         }
     }
 
-    public static List<String> getAllTags() {
-        List<String> tags = new ArrayList<>();
+    public static ObservableList<String> getAllTags() {
+        ObservableList<String> tags = FXCollections.observableArrayList();
         String sql = "SELECT name FROM tags";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();

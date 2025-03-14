@@ -4,6 +4,7 @@ import database.enums.Discipline;
 import database.enums.State;
 import database.enums.TableNames;
 import database.model.propertyModels.VideoDataSet;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -15,6 +16,7 @@ public class AddVideoController extends AddControllerHelper {
 
     @FXML
     MFXTextField tfLength;
+
 
     public AddVideoController(Stage stage) {super(stage);}
 

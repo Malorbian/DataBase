@@ -48,9 +48,14 @@ public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTa
         addCellValueFactoryHelper(tvData);
 
         filter = new Filter<>(this, logic.getGames());
-        btnAddEntry.setOnAction(event -> openAddEntryWindow("/fxml/addGame.fxml", new AddGameController(stage)));
+        btnAddEntry.setOnAction(event -> openAddGameWindow());
 
         updateTable();
+    }
+
+    void openAddGameWindow() {
+        Stage stage = new Stage();
+        openAddEntryWindow("/fxml/addGame.fxml", new AddGameController(stage), stage);
     }
 
 

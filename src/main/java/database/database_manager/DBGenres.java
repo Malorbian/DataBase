@@ -1,5 +1,8 @@
 package database.database_manager;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +42,8 @@ public class DBGenres extends DBHelper {
         }
     }
 
-    public static List<String> getAllGenres() {
-        List<String> genres = new ArrayList<>();
+    public static ObservableList<String> getAllGenres() {
+        ObservableList<String> genres = FXCollections.observableArrayList();
         String sql = "SELECT name FROM genres";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();

@@ -1,5 +1,6 @@
 package database.controller;
 
+import database.controller.customFXElements.TfInputListCell;
 import database.controller.customFXElements.TriStateListCell;
 import database.enums.Discipline;
 import database.enums.TableNames;
@@ -20,6 +21,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -159,8 +161,6 @@ public class ControllerHelper {
 
     // ----- TriStateCheckList ComboBox -----
     protected void initTriStateListViewComboBox(MFXFilterComboBox<String> comboBox, List<String> items) {
-        ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
-        
         // init TriState Map
         ObservableMap<String, TriState> selectionMap = FXCollections.observableHashMap();
         items.forEach(item -> selectionMap.put(item, TriState.NEUTRAL));
@@ -173,28 +173,23 @@ public class ControllerHelper {
         listView.setCellFactory(name -> new TriStateListCell(name, selectionMap, listView));
 
         // Combobox as Dropdown for ListView
-        Popup popup = new Popup();
-        popup.getContent().add(listView);
-        popup.setAutoHide(true);
+        setupCustomComboBoxPopup(comboBox, listView, selectionMap);
+    }
 
-        comboBox.setUserData(selectionMap);
-        comboBox.setOnMousePressed(event -> {
-            if (!comboBox.isShowing()) {
-                double xPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinX() - 15.0;
-                double yPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinY() + comboBox.getHeight();
+    protected void initTfInputListViewComboBox(MFXFilterComboBox<String> comboBox, List<String> items) {
+        // init Map
+        ObservableMap<String, String> selectionMap = FXCollections.observableHashMap();
+        //items.forEach(item -> selectionMap.put(item, ""));
 
-                listView.setMinWidth(comboBox.getWidth());
-                listView.setMaxWidth(comboBox.getWidth());
-                double itemHeight = 32.0;
-                double lvHeight = Math.min(itemHeight * items.size(), 300);
-                listView.setMaxHeight(lvHeight);
+        // ListView
+        MFXListView<String> listView = new MFXListView<>();
+        listView.getItems().addAll(items);
 
-                popup.show(stage, xPos, yPos);
-            } else {
-                popup.hide();
-            };
-        });
+        // Cell Factory
+        listView.setCellFactory(name -> new TfInputListCell(name, selectionMap, listView));
 
+        // Combobox as Dropdown for ListView
+        setupCustomComboBoxPopup(comboBox, listView, selectionMap);
     }
 
 
@@ -222,5 +217,31 @@ public class ControllerHelper {
             return str; // Falls null oder leer, unverändert zurückgeben
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    private void setupCustomComboBoxPopup(MFXComboBox<String> comboBox, MFXListView<String> listView, ObservableMap<?, ?> selectionMap) {
+        Popup popup = new Popup();
+        popup.getContent().add(listView);
+        popup.setAutoHide(true);
+        popup.setAutoFix(true);
+
+        comboBox.setUserData(selectionMap);
+        comboBox.setOnMousePressed(event -> {
+            if (!comboBox.isShowing()) {
+                double xPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinX() - 15.0;
+                double yPos = comboBox.localToScreen(comboBox.getBoundsInLocal()).getMinY() + comboBox.getHeight();
+
+                listView.setMinWidth(comboBox.getWidth());
+                listView.setMaxWidth(comboBox.getWidth());
+                double itemHeight = 32.0;
+                double lvHeight = Math.min(itemHeight * listView.getItems().size(), 300);
+                listView.setMaxHeight(lvHeight);
+
+                popup.show(stage, xPos, yPos);
+            } else {
+                popup.hide();
+            };
+        });
+
     }
 }

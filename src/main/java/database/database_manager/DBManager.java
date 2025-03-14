@@ -4,6 +4,8 @@ import database.model.*;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,20 +122,20 @@ public class DBManager {
 
     // ----- Get artists/genres/tags/platforms -----
 
-    public static List<ArtistEntry> getArtists() { return DBArtists.getAllArtists(); }
+    public static ObservableList<ArtistEntry> getArtists() { return DBArtists.getAllArtists(); }
 
-    public static List<String> getGenres() { return DBGenres.getAllGenres(); }
+    public static ObservableList<String> getGenres() { return DBGenres.getAllGenres(); }
 
-    public static List<String> getTags() { return DBTags.getAllTags(); }
+    public static ObservableList<String> getTags() { return DBTags.getAllTags(); }
 
-    public static List<String> getPlatforms() { return DBRatings.getAllPlatforms(); }
+    public static ObservableList<String> getPlatforms() { return DBRatings.getAllPlatforms(); }
 
 
     // ----- Get games from database -----
 
-    public static List<GameDataSet> getGameDataSetCollection() {
+    public static ObservableList<GameDataSet> getGameDataSetCollection() {
 
-        List<GameDataSet> gameDataSets = new ArrayList<>();
+        ObservableList<GameDataSet> gameDataSets = FXCollections.observableArrayList();
         List<GameEntry> games = DBGames.getAllGames();
 
         for (GameEntry game : games) {
@@ -149,9 +151,9 @@ public class DBManager {
 
     // ----- Get stories from database -----
 
-    public static List<StoryDataSet> getStoryDataSetCollection() {
+    public static ObservableList<StoryDataSet> getStoryDataSetCollection() {
 
-        List<StoryDataSet> storyDataSets = new ArrayList<>();
+        ObservableList<StoryDataSet> storyDataSets = FXCollections.observableArrayList();
         List<StoryEntry> stories = DBStories.getAllStories();
 
         for (StoryEntry story : stories) {
@@ -166,9 +168,9 @@ public class DBManager {
 
     // ----- Get videos from database -----
 
-    public static List<VideoDataSet> getVideoDataSetCollection() {
+    public static ObservableList<VideoDataSet> getVideoDataSetCollection() {
 
-        List<VideoDataSet> videoDataSets = new ArrayList<>();
+        ObservableList<VideoDataSet> videoDataSets = FXCollections.observableArrayList();
         List<VideoEntry> videos = DBVideos.getAllVideos();
 
         for (VideoEntry video : videos) {

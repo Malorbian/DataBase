@@ -63,6 +63,7 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
     @FXML
     MFXFilterComboBox<String> fcBoxFilterTags;
 
+
     Filter<U, T> filter;
 
     MainController parentController;
@@ -71,8 +72,6 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
     public TabControllerHelper(Stage stage, MainController parentController) {
         super(stage);
         this.parentController = parentController;
-
-
     }
 
 
@@ -99,9 +98,8 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
     abstract void init();
 
 
-    void openAddEntryWindow(String fxmlPath, V controller) {
+    void openAddEntryWindow(String fxmlPath, V controller, Stage stage) {
         try {
-            Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
             fxmlLoader.setController(controller);
             Parent root = fxmlLoader.load();
@@ -116,7 +114,7 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
         }
     }
 
-    void updateTable() {
+    public void updateTable() {
         tvData.setItems(filter.getFilteredData());
     }
 

@@ -194,9 +194,9 @@ public class MainController extends ControllerHelper implements Initializable {
     }
 
     private void updateData() {
-        //gamesTabController.showGames(FXCollections.observableArrayList(logic.getGames()));
-        storiesTabController.showStories(FXCollections.observableArrayList(logic.getStories()));
-        videosTabController.showVideos(FXCollections.observableArrayList(logic.getVideos()));
+        gamesTabController.updateTable();
+        //storiesTabController.updateTable();
+        //videosTabController.updateTable();
         setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
     }
 

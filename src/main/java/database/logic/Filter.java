@@ -29,7 +29,7 @@ public class Filter<T extends TabController, U extends DataSet> {
     FilteredList<U> filteredData;
 
 
-    public Filter(T controller, List<U> data) {
+    public Filter(T controller, ObservableList<U> data) {
 
         initDataLists(data);
         initFilterObjects(controller);
@@ -41,8 +41,8 @@ public class Filter<T extends TabController, U extends DataSet> {
 
     // ----- Initialize Objects -----
 
-    void initDataLists(List<U> data) {
-        unfilteredData = FXCollections.observableArrayList(data);
+    void initDataLists(ObservableList<U> data) {
+        unfilteredData = data;
         preFilteredData = new FilteredList<>(unfilteredData, game -> true);
         filteredData = new FilteredList<>(preFilteredData, game -> true);
     }
