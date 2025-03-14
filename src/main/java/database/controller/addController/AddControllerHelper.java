@@ -104,7 +104,7 @@ public abstract class AddControllerHelper extends ControllerHelper implements Ad
         btnSaveEntry.setOnAction(getSaveEntryHandler());
     }
 
-    Map<String, String> ratingsUserDataCast(Object object) {
+    ObservableMap<String, String> ratingsUserDataCast(Object object) {
         if (object instanceof ObservableMap<?, ?>) {
             return (ObservableMap<String, String>) object;
         } else {

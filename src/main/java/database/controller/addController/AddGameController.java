@@ -8,6 +8,7 @@ import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.beans.binding.BooleanBinding;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -66,7 +67,7 @@ public class AddGameController extends AddControllerHelper {
             // Tags
             List<String> tags = clvTags.getSelectionModel().getSelectedValues();
             // Ratings
-            Map<String, String> ratingsSelection = ratingsUserDataCast(fcbRatings.getUserData());
+            ObservableMap<String, String> ratingsSelection = ratingsUserDataCast(fcbRatings.getUserData());
             // TODO: Image (Image needs GUI implementation)
             // Add game to database
             logic.addGame(new GameDataSet(-1, title, artist, genre, state, link, null, ratingsSelection, tags, lastPlayed));

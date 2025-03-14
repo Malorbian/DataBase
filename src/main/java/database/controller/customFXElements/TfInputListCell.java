@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
+import java.util.Map;
+
 public class TfInputListCell extends MFXListCell<String> {
 
     private final Label label;
@@ -29,7 +31,6 @@ public class TfInputListCell extends MFXListCell<String> {
             } else {
                 if (!newValue.isBlank()) {
                     selectionMap.put(name, newValue);
-                    selectionMap.forEach((k, v) -> System.out.println(k + ": " + v));
                 }
             }
         });
