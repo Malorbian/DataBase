@@ -1,19 +1,10 @@
 package database.controller.tabController;
 
 import database.controller.MainController;
-import database.controller.addController.AddGameController;
 import database.controller.addController.AddStoryController;
 import database.logic.Filter;
-import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.StoryDataSet;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-
-import java.util.List;
 
 public class StoriesTabController extends  TabControllerHelper<StoryDataSet, StoriesTabController, AddStoryController> {
 

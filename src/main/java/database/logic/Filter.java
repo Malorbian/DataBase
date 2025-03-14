@@ -5,7 +5,10 @@ import database.enums.TriState;
 import database.model.propertyModels.DataSet;
 import io.github.palexdev.materialfx.controls.MFXCheckListView;
 import io.github.palexdev.materialfx.controls.MFXTextField;
-import javafx.collections.*;
+import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 
 import java.util.HashSet;

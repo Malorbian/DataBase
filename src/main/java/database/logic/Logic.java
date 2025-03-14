@@ -12,8 +12,6 @@ import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Logic {
     private static Logic instance;

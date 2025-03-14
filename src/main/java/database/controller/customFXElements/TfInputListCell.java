@@ -1,6 +1,5 @@
 package database.controller.customFXElements;
 
-import io.github.palexdev.materialfx.controls.MFXCheckbox;
 import io.github.palexdev.materialfx.controls.MFXListView;
 import io.github.palexdev.materialfx.controls.cell.MFXListCell;
 import javafx.collections.ObservableMap;

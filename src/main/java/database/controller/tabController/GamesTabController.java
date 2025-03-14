@@ -3,8 +3,6 @@ package database.controller.tabController;
 import database.controller.MainController;
 import database.controller.addController.AddGameController;
 import database.logic.Filter;
-import database.model.propertyModels.DataSet;
-import database.model.propertyModels.DataSetBase;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
@@ -12,15 +10,11 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTabController, AddGameController> {

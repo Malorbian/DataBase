@@ -1,13 +1,10 @@
 package database.controller.addController;
 
 import database.controller.ControllerHelper;
-import database.enums.Discipline;
 import database.enums.State;
 import database.enums.TableNames;
 import io.github.palexdev.materialfx.controls.*;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
