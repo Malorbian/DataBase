@@ -60,9 +60,10 @@ class DBArtists extends DBHelper {
 
     protected static int getArtistId(String name, MediaType mediaType, Connection conn) {
 
-        String sql = "SELECT artist_id FROM artists WHERE LOWER(name) = LOWER(?) AND mediaType = ?";
+        String sql = "SELECT artist_id FROM artists WHERE LOWER(name) = LOWER(?) AND mediaType_id = ?";
         try (PreparedStatement pStmt = conn.prepareStatement(sql)) {
             // Check if artist already exists
+            int id = DBMediaTypes.getMediaTypeId(String.valueOf(mediaType), conn);
             pStmt.setString(1, name);
             pStmt.setString(2, mediaType.toString());
 

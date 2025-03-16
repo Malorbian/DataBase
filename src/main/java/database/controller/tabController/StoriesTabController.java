@@ -3,10 +3,10 @@ package database.controller.tabController;
 import database.controller.MainController;
 import database.controller.addController.AddStoryController;
 import database.logic.Filter;
-import database.model.propertyModels.StoryDataSet;
+import database.model.propertyModels.LiteratureDataSet;
 import javafx.stage.Stage;
 
-public class StoriesTabController extends  TabControllerHelper<StoryDataSet, StoriesTabController, AddStoryController> {
+public class StoriesTabController extends  TabControllerHelper<LiteratureDataSet, StoriesTabController, AddStoryController> {
 
     public StoriesTabController(Stage stage, MainController parentController) {
         super(stage, parentController);
@@ -14,7 +14,7 @@ public class StoriesTabController extends  TabControllerHelper<StoryDataSet, Sto
 
     @Override
     void init() {
-        initTable(getFieldsFromClass(StoryDataSet.class));
+        initTable(getFieldsFromClass(LiteratureDataSet.class));
 
         // TODO: filter
         filter = new Filter<>(this, logic.getStories());

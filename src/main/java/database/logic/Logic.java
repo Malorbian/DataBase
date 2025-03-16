@@ -5,9 +5,8 @@ import database.enums.MediaType;
 import database.enums.TableNames;
 import database.model.ArtistEntry;
 import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.StoryDataSet;
+import database.model.propertyModels.LiteratureDataSet;
 import database.model.propertyModels.VideoDataSet;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
@@ -17,7 +16,7 @@ public class Logic {
     private static Logic instance;
 
     private ObservableList<GameDataSet> games;
-    private ObservableList<StoryDataSet> stories;
+    private ObservableList<LiteratureDataSet> stories;
     private ObservableList<VideoDataSet> videos;
     private ObservableList<String> genres;
     private ObservableList<String> tags;
@@ -37,7 +36,7 @@ public class Logic {
 
 
     private Logic() {
-        DBManager.initDefaultDatabase();
+        //DBManager.initDefaultDatabase();
         //reloadData();
     }
 
@@ -51,26 +50,7 @@ public class Logic {
 
     // ----- Constructor Helper -----
 
-    private void fillArtistLists() {
-        artistsGames = FXCollections.observableArrayList();
-        artistsStories = FXCollections.observableArrayList();
-        artistsVideos = FXCollections.observableArrayList();
-        for (ArtistEntry artist : DBManager.getArtists()) {
-            switch (MediaType.valueOf(artist.getMediaType())) {
-                case GAMES:
-                    artistsGames.add(artist.getName());
-                    break;
-                case LITERATURE:
-                    artistsStories.add(artist.getName());
-                    break;
-                case VIDEO:
-                    artistsVideos.add(artist.getName());
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
+
 
     /*
     public void reloadData() {
@@ -197,7 +177,7 @@ public class Logic {
         games.add(game);
     }
 
-    public void addStory(StoryDataSet story) {
+    public void addStory(LiteratureDataSet story) {
         //story.setId(String.valueOf(DBManager.addStory(story)));
         stories.add(story);
     }
@@ -235,7 +215,7 @@ public class Logic {
 
     public ObservableList<GameDataSet> getGames() { return games; }
 
-    public ObservableList<StoryDataSet> getStories() { return stories; }
+    public ObservableList<LiteratureDataSet> getStories() { return stories; }
 
     public ObservableList<VideoDataSet> getVideos() { return videos; }
 
@@ -245,5 +225,7 @@ public class Logic {
     public String getDBPath() { return App_PATH; }
 
     public String getDBName() { return DB_Name; }
+
+    public String getDB_URL() { return DB_URL; }
 
 }

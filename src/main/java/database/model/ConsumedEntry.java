@@ -1,11 +1,11 @@
 package database.model;
 
-public class PlayedEntry {
+public class ConsumedEntry {
     private Integer id;
     private String date;
     private String version;
 
-    public PlayedEntry(Integer id, String date, String version) {
+    public ConsumedEntry(Integer id, String date, String version) {
         this.id = id;
         this.date = date;
         this.version = version;

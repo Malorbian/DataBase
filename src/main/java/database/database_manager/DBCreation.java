@@ -50,6 +50,7 @@ public class DBCreation extends DBHelper{
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {
 
+            conn.setAutoCommit(false);
             enableForeignKey(conn);
 
             stmt.executeUpdate(DBMediaTypes.createTableSQL);
@@ -57,11 +58,13 @@ public class DBCreation extends DBHelper{
             stmt.executeUpdate(DBGenres.createTableSQL);
             stmt.executeUpdate(DBMediaEntries.getCreateTableSQL());
             stmt.executeUpdate(DBTags.createTableSQL);
-            stmt.executeUpdate(DBPlayed.createTableSQL);
+            stmt.executeUpdate(DBConsumedMedia.createTableSQL);
             stmt.executeUpdate(DBRatings.createTableSQL);
             stmt.executeUpdate(DBMedia_Tags.createTableSQL);
             stmt.executeUpdate(DBRatingPlatforms.createTableSQL);
             stmt.executeUpdate(DBMediaTypes_RatingPlatforms.createTableSQL);
+
+            conn.commit();
 
         } catch (SQLException e) {
             System.out.println("Creating tables failed.");

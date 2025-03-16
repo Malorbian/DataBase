@@ -29,7 +29,7 @@ public class DBRatingPlatforms extends DBHelper{
         ObservableMap<MediaType, String[]> ratingPlatforms = FXCollections.observableHashMap();
         String sql = "SELECT mr.mediaType_id AS mediaType, " +
                 "GROUP_CONCAT(rp.name, ', ') AS platform_names " +
-                "FROM rating_platforms rp" +
+                "FROM rating_platforms rp " +
                 "LEFT JOIN mediaTypes_ratingPlatforms mr ON rp.platform_id = mr.ratingPlatform_id " +
                 "GROUP BY mr.mediaType_id";
 

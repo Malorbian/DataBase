@@ -3,7 +3,7 @@ package database.controller.addController;
 import database.enums.MediaType;
 import database.enums.State;
 import database.enums.TableNames;
-import database.model.propertyModels.StoryDataSet;
+import database.model.propertyModels.LiteratureDataSet;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,7 +30,7 @@ public class AddStoryController extends AddControllerHelper {
     @Override
     EventHandler<ActionEvent> getSaveEntryHandler() {
         return event -> {
-            logic.addStory(new StoryDataSet(-1,
+            logic.addStory(new LiteratureDataSet(-1,
                     null,
                     tfName.getText(),
                     cbArtist.getValue(),

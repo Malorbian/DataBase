@@ -1,8 +1,6 @@
 package database.model.propertyModels;
 
 import database.enums.State;
-import database.model.PlayedEntry;
-import database.model.mediaModels.GameEntry;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -14,25 +12,21 @@ public class GameDataSet extends DataSetBase {
     private StringProperty lastPlayedVersion = new SimpleStringProperty();
 
     public GameDataSet(int id,
+                       String type,
                        String title,
                        String artist,
                        String genre,
                        State state,
                        String link,
                        String storagePath,
+                       Double length,
                        List<String> tags,
                        Map<String, String> ratings,
-                       PlayedEntry lastPlayed) {
-        super(id, title, artist, genre, state, link, storagePath, tags, ratings);
-        this.lastPlayedDate.set(lastPlayed.getDate());
-        this.lastPlayedVersion.set(lastPlayed.getVersion());
-    }
-
-    public GameDataSet(GameEntry game, List<String> tags, Map<String, String> ratings) {
-        this(game.getId(), game.getTitle(), game.getArtist(),
-                game.getGenre(), State.valueOf(game.getState()), game.getLink(),
-                game.getStoragePath(), tags, ratings,
-                new PlayedEntry(-1, game.getLastPlayedDate(), game.getLastPlayedVersion()));
+                       String lastPlayedDate,
+                       String lastPlayedVersion) {
+        super(id, type, title, artist, genre, state, link, storagePath, length, tags, ratings);
+        this.lastPlayedDate.set(lastPlayedDate);
+        this.lastPlayedVersion.set(lastPlayedVersion);
     }
 
 

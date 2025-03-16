@@ -1,11 +1,11 @@
 package database.database_manager;
 
-import database.enums.MediaType;
 import database.logic.Logic;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper {
@@ -40,58 +40,6 @@ public class DBHelper {
         }
     }
 
-    // helper for getting tags for id
-    protected static List<String> getTagsForIdHelper(String sql, int id) {
-        List<String> tags = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                tags.add(rs.getString("name"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tags;
-    }
-
-    protected static void addRelationsHelper(int id, List<String> tags, MediaType medium) {
-        String insertRelationSQL = null;
-        switch (medium) {
-            case GAMES -> insertRelationSQL = "INSERT OR IGNORE INTO games_tags (game_id, tag_id) VALUES (?, ?)";
-            case LITERATURE -> insertRelationSQL = "INSERT OR IGNORE INTO stories_tags (story_id, tag_id) VALUES (?, ?)";
-            case VIDEO -> insertRelationSQL = "INSERT OR IGNORE INTO videos_tags (video_id, tag_id) VALUES (?, ?)";
-            default -> throw new IllegalStateException("Unexpected value: " + medium);
-        }
-        String selectTagIdSQL = "SELECT tag_id FROM tags WHERE name = ?";
-
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement selectTagStmt = conn.prepareStatement(selectTagIdSQL);
-             PreparedStatement insertRelationStmt = conn.prepareStatement(insertRelationSQL)) {
-
-            conn.setAutoCommit(false); // Beginne eine Transaktion
-
-            for (String tag : tags) {
-                selectTagStmt.setString(1, tag);
-                try (ResultSet rs = selectTagStmt.executeQuery()) {
-                    if (rs.next()) {
-                        int tag_id = rs.getInt("tag_id");
-
-                        insertRelationStmt.setInt(1, id);
-                        insertRelationStmt.setInt(2, tag_id);
-                        insertRelationStmt.addBatch(); // Batch-Insert vorbereiten
-                    }
-                }
-            }
-
-            insertRelationStmt.executeBatch(); // Führt alle gesammelten Inserts auf einmal aus
-            conn.commit(); // Transaktion abschließen
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     protected static int getIdHelper(String title, String artist, Double length, String columnLabel, String sql, Connection conn) {
         try (PreparedStatement pStmt = conn.prepareStatement(sql)) {
@@ -150,6 +98,20 @@ public class DBHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    static ObservableList<String> getEntries(String sql) {
+        ObservableList<String> entries = FXCollections.observableArrayList();
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                entries.add(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return entries;
     }
 
 

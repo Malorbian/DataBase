@@ -4,7 +4,7 @@ import database.enums.MediaType;
 
 public class ArtistEntry {
     private Integer id;
-    private  String name;
+    private String name;
     private MediaType mediaType;
 
     public ArtistEntry(Integer id, String name, MediaType mediaType) {

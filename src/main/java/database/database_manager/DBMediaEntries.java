@@ -4,7 +4,7 @@ import database.enums.MediaType;
 import database.enums.State;
 import database.model.propertyModels.DataSet;
 import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.StoryDataSet;
+import database.model.propertyModels.LiteratureDataSet;
 import database.model.propertyModels.VideoDataSet;
 
 import java.sql.Connection;
@@ -21,20 +21,23 @@ public class DBMediaEntries extends DBHelper {
 
     public static <T extends DataSet> void addEntry(T entry) {
         try (Connection conn = DriverManager.getConnection(DB_URL)){
-            String sql = "INSERT INTO media_entries(mediaType_id, entryType_id, title, artist_id, genre_id, state, link, storagePath) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO media_entries(mediaType_id, entryType_id, title, artist_id, genre_id, state, link, storagePath, length) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
-                addEntryHelper(entry, ps, conn);
-
+                int mediaTypeId = DBMediaTypes.getMediaTypeId(getMediaType(entry).toString(), conn);
+                int entryTypeId = DBEntryTypes.getTypeId(entry.getType(), conn);
                 int artistId = DBArtists.getArtistId(entry.getArtist(), MediaType.LITERATURE, conn);
                 int genreId = DBGenres.getGenreId(entry.getGenre(), conn);
 
+                ps.setInt(1, mediaTypeId);
+                ps.setInt(2, entryTypeId);
                 ps.setString(3, entry.getTitle());
                 ps.setInt(4, artistId);
                 ps.setInt(5, genreId);
                 ps.setString(6, entry.getState());
                 ps.setString(7, entry.getLink());
                 ps.setString(8, entry.getStoragePath());
+                ps.setDouble(9, Double.parseDouble(entry.getLength()));
 
 
                 ps.executeUpdate();
@@ -58,6 +61,7 @@ public class DBMediaEntries extends DBHelper {
                 "state TEXT, " +
                 "link TEXT, " +
                 "storagePath TEXT, " +
+                "length REAL, " +
                 "CONSTRAINT fk_mediaType FOREIGN KEY (mediaType_id) REFERENCES media_types(mediaType_id), " +
                 "CONSTRAINT fk_entryType FOREIGN KEY (entryType_id) REFERENCES entry_types(type_id), " +
                 "CONSTRAINT fk_artist FOREIGN KEY (artist_id) REFERENCES artists(artist_id), " +
@@ -70,26 +74,9 @@ public class DBMediaEntries extends DBHelper {
 
     // ----- Helper methods -----
 
-    private static <T extends DataSet> void addEntryHelper(T entry, PreparedStatement ps, Connection conn) throws SQLException {
-        switch (getMediaType(entry)) {
-            case LITERATURE:
-                ps.setInt(1, DBMediaTypes.getMediaTypeId(String.valueOf(MediaType.LITERATURE), conn));
-                ps.setInt(2, DBEntryTypes.getTypeId(((StoryDataSet) entry).getType(), conn));
-                break;
-            case GAMES:
-                ps.setInt(1, DBMediaTypes.getMediaTypeId(String.valueOf(MediaType.GAMES), conn));
-                ps.setInt(2, -1);
-                break;
-            case VIDEO:
-                ps.setInt(1, DBMediaTypes.getMediaTypeId(String.valueOf(MediaType.VIDEO), conn));
-                ps.setInt(2, DBEntryTypes.getTypeId(((VideoDataSet) entry).getType(), conn));
-                break;
-        }
-    }
-
     private static <T extends DataSet> MediaType getMediaType(T entry) {
         return switch (entry) {
-            case StoryDataSet ignored -> MediaType.LITERATURE;
+            case LiteratureDataSet ignored -> MediaType.LITERATURE;
             case GameDataSet ignored -> MediaType.GAMES;
             case VideoDataSet ignored -> MediaType.VIDEO;
             case null, default ->

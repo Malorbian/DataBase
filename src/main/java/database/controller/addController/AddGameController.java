@@ -3,7 +3,7 @@ package database.controller.addController;
 import database.enums.MediaType;
 import database.enums.State;
 import database.enums.TableNames;
-import database.model.PlayedEntry;
+import database.model.ConsumedEntry;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -62,7 +62,7 @@ public class AddGameController extends AddControllerHelper {
                 LocalDate lastPlayedDate = dpLastPlayedDate.getValue();
                 dateString = lastPlayedDate.toString();
             } catch (NullPointerException ignored) {}
-            PlayedEntry lastPlayed = new PlayedEntry(-1, dateString, tfVersion.getText());
+            ConsumedEntry lastPlayed = new ConsumedEntry(-1, dateString, tfVersion.getText());
             // Tags
             List<String> tags = clvTags.getSelectionModel().getSelectedValues();
             // Ratings

@@ -1,6 +1,5 @@
 package database.database_manager;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
@@ -33,18 +32,8 @@ public class DBGenres extends DBHelper {
     }
 
     public static ObservableList<String> getAllGenres() {
-        ObservableList<String> genres = FXCollections.observableArrayList();
         String sql = "SELECT name FROM genres";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                genres.add(rs.getString("name"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return genres;
+        return getEntries(sql);
     }
 
     protected static int getGenreId(String name, Connection conn) {
@@ -62,15 +51,6 @@ public class DBGenres extends DBHelper {
             e.printStackTrace();
         }
         return -1;
-    }
-
-    protected static int checkAndAddGenre(String name, Connection conn) {
-        int genreId = getGenreId(name, conn);
-        if (genreId == -1) {
-            addGenre(name, conn);
-            genreId = getGenreId(name, conn);
-        }
-        return genreId;
     }
 
 }

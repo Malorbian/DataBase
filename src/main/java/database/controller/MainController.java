@@ -5,7 +5,7 @@ import database.controller.tabController.GamesTabController;
 import database.controller.tabController.StoriesTabController;
 import database.controller.tabController.VideosTabController;
 import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.StoryDataSet;
+import database.model.propertyModels.LiteratureDataSet;
 import database.model.propertyModels.VideoDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.event.ActionEvent;
@@ -215,7 +215,7 @@ public class MainController extends ControllerHelper implements Initializable {
                         null,
                         new HashMap<>(),
                         entryTags,
-                        new PlayedEntry(-1, "?", "?")));
+                        new ConsumedEntry(-1, "?", "?")));
             }
         };
     }
@@ -250,7 +250,7 @@ public class MainController extends ControllerHelper implements Initializable {
 
     // Setter
 
-    public void setStatusCurrentMediaCount(List<GameDataSet> games, List<StoryDataSet> stories, List<VideoDataSet> videos) {
+    public void setStatusCurrentMediaCount(List<GameDataSet> games, List<LiteratureDataSet> stories, List<VideoDataSet> videos) {
         String status = "Games: " + getListSize(games) + "/" + getListSize(logic.getGames()) +
                 "  |  Stories: " + getListSize(stories) + "/" + getListSize(logic.getStories()) +
                 "  |  Videos: " + getListSize(videos) + "/" + getListSize(logic.getVideos());
