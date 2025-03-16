@@ -1,7 +1,7 @@
 package database.logic;
 
 import database.database_manager.DBManager;
-import database.enums.Discipline;
+import database.enums.MediaType;
 import database.enums.TableNames;
 import database.model.ArtistEntry;
 import database.model.propertyModels.GameDataSet;
@@ -38,7 +38,7 @@ public class Logic {
 
     private Logic() {
         DBManager.initDefaultDatabase();
-        reloadData();
+        //reloadData();
     }
 
     public static Logic getInstance() {
@@ -56,14 +56,14 @@ public class Logic {
         artistsStories = FXCollections.observableArrayList();
         artistsVideos = FXCollections.observableArrayList();
         for (ArtistEntry artist : DBManager.getArtists()) {
-            switch (Discipline.valueOf(artist.getDiscipline())) {
+            switch (MediaType.valueOf(artist.getMediaType())) {
                 case GAMES:
                     artistsGames.add(artist.getName());
                     break;
-                case STORIES:
+                case LITERATURE:
                     artistsStories.add(artist.getName());
                     break;
-                case VIDEOS:
+                case VIDEO:
                     artistsVideos.add(artist.getName());
                     break;
                 default:
@@ -72,6 +72,7 @@ public class Logic {
         }
     }
 
+    /*
     public void reloadData() {
         games = DBManager.getGameDataSetCollection();
         stories = DBManager.getStoryDataSetCollection();
@@ -81,6 +82,8 @@ public class Logic {
         fillArtistLists();
         platforms = DBManager.getPlatforms();
     }
+
+     */
 
 
 
@@ -96,13 +99,13 @@ public class Logic {
     public void openDatabase(String dbNamePath) {
         updatePaths(dbNamePath);
         DBManager.changeDatabase();
-        reloadData();
+        //reloadData();
     }
 
     public void createNewDatabase(String dbNamePath) {
         updatePaths(dbNamePath);
         DBManager.createNewDatabase();
-        reloadData();
+        //reloadData();
     }
 
     private void updatePaths(String dbNamePath) {
@@ -141,16 +144,16 @@ public class Logic {
 
     public void addArtistName(ArtistEntry artist) {
         if (artist.getName() == null) { return; }
-        switch (Discipline.valueOf(artist.getDiscipline())) {
+        switch (MediaType.valueOf(artist.getMediaType())) {
             case GAMES:
                 if (artistsGames.contains(artist.getName())) { return; }
                 artistsGames.add(artist.getName());
                 break;
-            case STORIES:
+            case LITERATURE:
                 if (artistsStories.contains(artist.getName())) { return; }
                 artistsStories.add(artist.getName());
                 break;
-            case VIDEOS:
+            case VIDEO:
                 if (artistsVideos.contains(artist.getName())) { return; }
                 artistsVideos.add(artist.getName());
                 break;
@@ -162,12 +165,12 @@ public class Logic {
 
     public void addStringToTable(String string, TableNames tableName) {
         if (tableName == TableNames.ARTIST) {
-            throw new IllegalArgumentException("Discipline must be provided for ARTIST table");
+            throw new IllegalArgumentException("MediaType must be provided for ARTIST table");
         }
         addStringToTable(string, tableName, null);
     }
 
-    public void addStringToTable(String string, TableNames tableName, Discipline discipline) {
+    public void addStringToTable(String string, TableNames tableName, MediaType mediaType) {
         switch (tableName) {
             case GENRE:
                 addGenre(string);
@@ -179,7 +182,7 @@ public class Logic {
                 addPlatform(string);
                 break;
             case ARTIST:
-                addArtistName(new ArtistEntry(-1, string, discipline));
+                addArtistName(new ArtistEntry(-1, string, mediaType));
                 break;
             default:
                 break;
@@ -190,19 +193,21 @@ public class Logic {
     // ----- Add game/story/video -----
 
     public void addGame(GameDataSet game) {
-        game.setId(String.valueOf(DBManager.addGame(game)));
+        //game.setId(String.valueOf(DBManager.addGame(game)));
         games.add(game);
     }
 
     public void addStory(StoryDataSet story) {
-        story.setId(String.valueOf(DBManager.addStory(story)));
+        //story.setId(String.valueOf(DBManager.addStory(story)));
         stories.add(story);
     }
 
     public void addVideo(VideoDataSet video) {
-        video.setId(String.valueOf(DBManager.addVideo(video)));
+        //video.setId(String.valueOf(DBManager.addVideo(video)));
         videos.add(video);
     }
+
+
 
 
 

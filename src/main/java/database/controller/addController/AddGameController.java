@@ -1,6 +1,6 @@
 package database.controller.addController;
 
-import database.enums.Discipline;
+import database.enums.MediaType;
 import database.enums.State;
 import database.enums.TableNames;
 import database.model.PlayedEntry;
@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 public class AddGameController extends AddControllerHelper {
 
@@ -38,7 +37,7 @@ public class AddGameController extends AddControllerHelper {
 
     @Override
     void initArtistsComboBox() {
-        initializeEditableComboBox(cbArtist, logic.getArtistsGames(), TableNames.ARTIST, Discipline.GAMES, lblStatus);
+        initializeEditableComboBox(cbArtist, logic.getArtistsGames(), TableNames.ARTIST, MediaType.GAMES, lblStatus);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class AddGameController extends AddControllerHelper {
             ObservableMap<String, String> ratingsSelection = ratingsUserDataCast(fcbRatings.getUserData());
             // TODO: Image (Image needs GUI implementation)
             // Add game to database
-            logic.addGame(new GameDataSet(-1, title, artist, genre, state, link, null, ratingsSelection, tags, lastPlayed));
+            logic.addGame(new GameDataSet(-1, title, artist, genre, state, link, null, tags, ratingsSelection, lastPlayed));
             // Close window
             stage.close();
         };

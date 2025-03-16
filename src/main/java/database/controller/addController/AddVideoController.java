@@ -1,6 +1,6 @@
 package database.controller.addController;
 
-import database.enums.Discipline;
+import database.enums.MediaType;
 import database.enums.State;
 import database.enums.TableNames;
 import database.model.propertyModels.VideoDataSet;
@@ -22,7 +22,7 @@ public class AddVideoController extends AddControllerHelper {
 
     @Override
     void initArtistsComboBox() {
-        initializeEditableComboBox(cbArtist, logic.getArtistsVideos(), TableNames.ARTIST, Discipline.VIDEOS, lblStatus);
+        initializeEditableComboBox(cbArtist, logic.getArtistsVideos(), TableNames.ARTIST, MediaType.VIDEO, lblStatus);
     }
 
     @Override
@@ -34,13 +34,22 @@ public class AddVideoController extends AddControllerHelper {
     EventHandler<ActionEvent> getSaveEntryHandler() {
         return event -> {
             try {
+                State state;
+                if (cbState.getValue() != null) {
+                    state = State.valueOf(cbState.getValue());
+                } else {
+                    state = State.UNKNOWN;
+                }
                 logic.addVideo(new VideoDataSet(-1,
                         tfName.getText(),
+                        null,
                         cbArtist.getValue(),
                         cbGenre.getValue(),
-                        State.valueOf(cbState.getValue()),
+                        state,
                         tfLink.getText(),
+                        null,
                         clvTags.getSelectionModel().getSelectedValues(),
+                        null,
                         Double.parseDouble(tfLength.getText())));
                 stage.close();
             } catch (NumberFormatException e) {

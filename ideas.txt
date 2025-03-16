@@ -1,1 +1,6 @@
+TODO:
+- batch processing for loading data
+
+
+Ideas:
 - favorite tags

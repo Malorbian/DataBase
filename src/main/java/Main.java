@@ -1,4 +1,5 @@
 import database.controller.MainController;
+import database.database_manager.DBCreation;
 import database.database_manager.DBManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,8 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+        DBCreation.createDatabase();
 
     }
 }

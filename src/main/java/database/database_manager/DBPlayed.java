@@ -8,23 +8,14 @@ import java.util.List;
 
 class DBPlayed extends DBHelper {
 
-    // Tabelle erstellen, falls sie noch nicht existiert
-    protected static void createTable() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
-            enableForeignKey(conn);
-            String sql = "CREATE TABLE IF NOT EXISTS played_games (" +
-                    "game_id INTEGER, " +
-                    "date TEXT, " +
-                    "version TEXT NOT NULL, " +
-                    "CONSTRAINT fk_game_id FOREIGN KEY (game_id) REFERENCES games(game_id), " +
-                    "CONSTRAINT pk_game_id PRIMARY KEY (game_id)" +
-                    ");";
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    static final String createTableSQL = "CREATE TABLE IF NOT EXISTS played_games (" +
+            "game_id INTEGER, " +
+            "date TEXT, " +
+            "version TEXT NOT NULL, " +
+            "CONSTRAINT fk_game_id FOREIGN KEY (game_id) REFERENCES games(game_id), " +
+            "CONSTRAINT pk_game_id PRIMARY KEY (game_id)" +
+            ");";
+
 
     public static void addPlayedGame(PlayedEntry played) {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {

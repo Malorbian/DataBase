@@ -4,6 +4,10 @@ package database.controller;
 import database.controller.tabController.GamesTabController;
 import database.controller.tabController.StoriesTabController;
 import database.controller.tabController.VideosTabController;
+import database.enums.MediaType;
+import database.enums.State;
+import database.enums.TableNames;
+import database.model.PlayedEntry;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
@@ -25,8 +29,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController extends ControllerHelper implements Initializable {
 
@@ -43,6 +46,8 @@ public class MainController extends ControllerHelper implements Initializable {
     MenuItem miOpen;
     @FXML
     MenuItem miNew;
+    @FXML
+    MenuItem miAddDataSet;
     // Buttons
     @FXML
     MFXButton btnMinimizeWindow;
@@ -132,6 +137,7 @@ public class MainController extends ControllerHelper implements Initializable {
     private void initMenuItems() {
         miNew.setOnAction(createNewDatabase());
         miOpen.setOnAction(openDatabase());
+        //miAddDataSet.setOnAction(addDataSet(10000, 200, 15));
     }
 
 
@@ -183,6 +189,41 @@ public class MainController extends ControllerHelper implements Initializable {
             }
         };
     }
+
+    /*
+    private EventHandler<ActionEvent> addDataSet(int entryCount, int tagCount, int tagsPerEntryCount) {
+        List<String> tags = new ArrayList<>();
+        for (int i = 0; i < tagCount; i++) {
+            String tag = "Tag" + i;
+            tags.add(tag);
+            logic.addTag(tag);
+        }
+        String artist = "Artist 0";
+        String genre = "Genre 0";
+        logic.addStringToTable(artist, TableNames.ARTIST, MediaType.GAMES);
+        logic.addStringToTable(genre, TableNames.GENRE);
+        return event -> {
+            for (int i = 0; i < entryCount; i++) {
+                List<String> entryTags = new ArrayList<>();
+                for (int j = 0; j < tagsPerEntryCount; j++) {
+                    entryTags.add(tags.get((i + j) % tags.size()));
+                }
+                String name = "Game " + i;
+                logic.addGame(new GameDataSet(-1,
+                        name,
+                        artist,
+                        genre,
+                        State.DEV,
+                        null,
+                        null,
+                        new HashMap<>(),
+                        entryTags,
+                        new PlayedEntry(-1, "?", "?")));
+            }
+        };
+    }
+
+     */
 
     private void fileChooserHelper(FileChooser fileChooser, String title) {
         fileChooser.setTitle(title);

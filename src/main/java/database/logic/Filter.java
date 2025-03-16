@@ -1,6 +1,7 @@
 package database.logic;
 
 import database.controller.tabController.TabController;
+import database.controller.tabController.VideosTabController;
 import database.enums.TriState;
 import database.model.propertyModels.DataSet;
 import io.github.palexdev.materialfx.controls.MFXCheckListView;
@@ -10,6 +11,7 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.TextField;
 
 import java.util.HashSet;
 import java.util.List;
@@ -71,6 +73,7 @@ public class Filter<T extends TabController, U extends DataSet> {
     }
 
 
+
     // ----- Filter methods -----
 
     void setPredicates(boolean tagFilter) {
@@ -89,13 +92,12 @@ public class Filter<T extends TabController, U extends DataSet> {
         return entry -> {
             boolean genreMatch = checkSingleTriStateMatch(entry.getGenre(), filterMapGenres);
             boolean stateMatch =  selectedStates.isEmpty() || (entry.getState() != null && selectedStates.contains(entry.getState()));
-            boolean tagMatch = checkTriStateMatch(entry.getTags(), filterMapTags);
-
+            boolean extraFilter = extraFilter(entry);
             return (filterTitle.getText().isEmpty() || entry.getTitle().toLowerCase().contains(filterTitle.getText().toLowerCase()))
                     && (filterArtist.getText().isEmpty() || entry.getArtist().toLowerCase().contains(filterArtist.getText().toLowerCase()))
                     && genreMatch
                     && stateMatch
-                    && tagMatch;
+                    && extraFilter;
         };
     }
 
@@ -113,6 +115,10 @@ public class Filter<T extends TabController, U extends DataSet> {
 
 
     // ----- Helper Methods -----
+
+    boolean extraFilter(U entry) {
+        return true;
+    }
 
     MFXCheckListView<String> castToMFXCheckListView(Object object) {
         if (object instanceof MFXCheckListView<?>) {

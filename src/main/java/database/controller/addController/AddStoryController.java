@@ -1,6 +1,6 @@
 package database.controller.addController;
 
-import database.enums.Discipline;
+import database.enums.MediaType;
 import database.enums.State;
 import database.enums.TableNames;
 import database.model.propertyModels.StoryDataSet;
@@ -19,7 +19,7 @@ public class AddStoryController extends AddControllerHelper {
 
     @Override
     void initArtistsComboBox() {
-        initializeEditableComboBox(cbArtist, logic.getArtistsStories(), TableNames.ARTIST, Discipline.STORIES, lblStatus);
+        initializeEditableComboBox(cbArtist, logic.getArtistsStories(), TableNames.ARTIST, MediaType.LITERATURE, lblStatus);
     }
 
     @Override
@@ -31,12 +31,15 @@ public class AddStoryController extends AddControllerHelper {
     EventHandler<ActionEvent> getSaveEntryHandler() {
         return event -> {
             logic.addStory(new StoryDataSet(-1,
+                    null,
                     tfName.getText(),
                     cbArtist.getValue(),
                     cbGenre.getValue(),
                     State.valueOf(cbState.getValue()),
                     tfLink.getText(),
-                    clvTags.getSelectionModel().getSelectedValues()));
+                    null,
+                    clvTags.getSelectionModel().getSelectedValues(),
+                    null));
             stage.close();
         };
     }

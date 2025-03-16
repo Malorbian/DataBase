@@ -32,6 +32,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
+<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
 <BorderPane fx:id="rootPane" maxWidth="400.0" prefHeight="373.0" prefWidth="396.0" styleClass="border-pane" stylesheets="@../css/DefaultTheme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <GridPane alignment="CENTER" hgap="20.0" maxHeight="430.0" maxWidth="620.0" prefHeight="430.0" prefWidth="620.0" stylesheets="@../css/DefaultTheme.css" vgap="10.0">
@@ -66,7 +67,7 @@
             <MFXComboBox fx:id="cbArtist" allowEdit="true" floatMode="BORDER" floatingText="Artist*" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.columnIndex="0" GridPane.rowIndex="3" />
             <MFXComboBox fx:id="cbGenre" allowEdit="true" floatMode="BORDER" floatingText="Genre" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.rowIndex="4" />
             <MFXComboBox fx:id="cbState" floatMode="BORDER" floatingText="State" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="5" />
-            <MFXComboBox fx:id="cbRatings" floatMode="BORDER" floatingText="Ratings" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="6" />
+            <MFXFilterComboBox fx:id="fcbRatings" floatMode="BORDER" floatingText="Ratings" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="6" />
             <MFXTextField fx:id="tfLink" floatMode="BORDER" floatingText="Link" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="7" />
             <StackPane prefHeight="273.0" prefWidth="200.0" styleClass="grid-background" GridPane.columnIndex="1" GridPane.rowSpan="8">
                <GridPane.margin>

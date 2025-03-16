@@ -5,6 +5,7 @@ import database.model.propertyModels.VideoDataSet;
 
 public class VideoEntry {
     private Integer id;
+    private String type;
     private String title;
     private String artist;
     private String genre;
@@ -12,8 +13,9 @@ public class VideoEntry {
     private String link;
     private double length;
 
-    public VideoEntry(Integer id, String name, String artist, String genre, State state, String link, double length) {
+    public VideoEntry(Integer id, String type, String name, String artist, String genre, State state, String link, double length) {
         this.id = id;
+        this.type = type;
         this.title = name;
         this.artist = artist;
         this.genre = genre;
@@ -23,10 +25,11 @@ public class VideoEntry {
     }
 
     public VideoEntry (VideoDataSet video) {
-        this(Integer.parseInt(video.getId()), video.getTitle(), video.getArtist(), video.getGenre(), State.valueOf(video.getState()), video.getLink(), Double.parseDouble(video.getLength()));
+        this(Integer.parseInt(video.getId()), video.getType(), video.getTitle(), video.getArtist(), video.getGenre(), State.valueOf(video.getState()), video.getLink(), Double.parseDouble(video.getLength()));
     }
 
     public Integer getId() { return id; }
+    public String getType() { return type; }
     public String getTitle() {
         return title;
     }

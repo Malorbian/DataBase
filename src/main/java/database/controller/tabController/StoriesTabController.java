@@ -18,7 +18,6 @@ public class StoriesTabController extends  TabControllerHelper<StoryDataSet, Sto
 
         // TODO: filter
         filter = new Filter<>(this, logic.getStories());
-        Stage stage = new Stage();
         btnAddEntry.setOnAction(event -> openAddLiteratureWindow());
 
         updateTable();

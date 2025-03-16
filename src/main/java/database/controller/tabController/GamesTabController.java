@@ -39,7 +39,6 @@ public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTa
     @Override
     void init() {
         initTable(getFieldsFromClass(GameDataSet.class));
-        addCellValueFactoryHelper(tvData);
 
         filter = new Filter<>(this, logic.getGames());
         btnAddEntry.setOnAction(event -> openAddGameWindow());
@@ -51,34 +50,4 @@ public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTa
         Stage stage = new Stage();
         openAddEntryWindow("/fxml/addGame.fxml", new AddGameController(stage), stage);
     }
-
-
-    // --- Table View Helper ---
-
-    private void addCellValueFactoryHelper(TableView<GameDataSet> tableView) {
-        TableColumn<GameDataSet, String> tagsColumn = (TableColumn<GameDataSet, String>) getColumnByName(tableView, "Tags");
-        tagsColumn.setCellValueFactory(data -> {
-            ListProperty<StringProperty> tags = data.getValue().tagsProperty();
-            String tagsString = tags.stream()
-                    .map(StringProperty::get)
-                    .collect(Collectors.joining(", "));
-            return new SimpleStringProperty(tagsString);
-        });
-        TableColumn<GameDataSet, String> ratingColumn = (TableColumn<GameDataSet, String>) getColumnByName(tableView, "Ratings");
-        ratingColumn.setCellValueFactory(data -> {
-            MapProperty<String, StringProperty> ratings = data.getValue().ratingsProperty();
-            String ratingString = ratings.entrySet().stream()
-                    .map(entry -> entry.getKey() + ": " + entry.getValue().get())
-                    .collect(Collectors.joining(", "));
-            return new SimpleStringProperty(ratingString);
-        });
-    }
-
-    private <T> TableColumn<T, ?> getColumnByName(TableView<T> tableView, String columnName) {
-        return tableView.getColumns().stream()
-                .filter(column -> column.getText().equals(columnName))
-                .findFirst()
-                .orElse(null); // Falls keine Spalte gefunden wurde, wird null zurückgegeben
-    }
-
 }

@@ -1,6 +1,6 @@
 package database.database_manager;
 
-import database.enums.Discipline;
+import database.enums.MediaType;
 import database.logic.Logic;
 
 import java.nio.file.Paths;
@@ -56,12 +56,12 @@ public class DBHelper {
         return tags;
     }
 
-    protected static void addRelationsHelper(int id, List<String> tags, Discipline medium) {
+    protected static void addRelationsHelper(int id, List<String> tags, MediaType medium) {
         String insertRelationSQL = null;
         switch (medium) {
             case GAMES -> insertRelationSQL = "INSERT OR IGNORE INTO games_tags (game_id, tag_id) VALUES (?, ?)";
-            case STORIES -> insertRelationSQL = "INSERT OR IGNORE INTO stories_tags (story_id, tag_id) VALUES (?, ?)";
-            case VIDEOS -> insertRelationSQL = "INSERT OR IGNORE INTO videos_tags (video_id, tag_id) VALUES (?, ?)";
+            case LITERATURE -> insertRelationSQL = "INSERT OR IGNORE INTO stories_tags (story_id, tag_id) VALUES (?, ?)";
+            case VIDEO -> insertRelationSQL = "INSERT OR IGNORE INTO videos_tags (video_id, tag_id) VALUES (?, ?)";
             default -> throw new IllegalStateException("Unexpected value: " + medium);
         }
         String selectTagIdSQL = "SELECT tag_id FROM tags WHERE name = ?";
@@ -115,4 +115,42 @@ public class DBHelper {
     protected static int getIdHelper(String title, String artist, String columnLabel, String sql, Connection conn) {
         return getIdHelper(title, artist, -1.0, columnLabel, sql, conn);
     }
+
+    protected static int getIdByString(String sql, String name, Connection conn) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    protected static void addEntryByString(String sql, String name) {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void addEntriesByList(String sql, List<String> names) {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (String platform_Name : names) {
+                ps.setString(1, platform_Name);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

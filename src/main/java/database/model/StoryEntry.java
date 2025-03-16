@@ -5,14 +5,16 @@ import database.model.propertyModels.StoryDataSet;
 
 public class StoryEntry {
     private Integer id;
+    private String type;
     private String title;
     private String artist;
     private String link;
     private String genre;
     private State state;
 
-    public StoryEntry(Integer id, String name, String artist, String genre, State state, String link) {
+    public StoryEntry(Integer id, String type, String name, String artist, String genre, State state, String link) {
         this.id = id;
+        this.type = type;
         this.title = name;
         this.artist = artist;
         this.genre = genre;
@@ -21,11 +23,12 @@ public class StoryEntry {
     }
 
     public StoryEntry(StoryDataSet story) {
-        this(Integer.valueOf(story.getId()), story.getTitle(), story.getArtist(),
+        this(Integer.valueOf(story.getId()), story.getType(), story.getTitle(), story.getArtist(),
                 story.getGenre(), State.valueOf(story.getState()), story.getLink());
     }
 
     public Integer getId() { return id; }
+    public String getType() { return type; }
     public String getTitle() {
         return title;
     }

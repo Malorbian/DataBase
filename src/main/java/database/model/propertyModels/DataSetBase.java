@@ -16,8 +16,9 @@ public class DataSetBase implements DataSet {
     protected StringProperty genre = new SimpleStringProperty();
     protected StringProperty state = new SimpleStringProperty();
     protected StringProperty link = new SimpleStringProperty();
+    protected StringProperty storagePath = new SimpleStringProperty();
     protected ListProperty<StringProperty> tags;
-    //private MapProperty<String, StringProperty> ratings;
+    protected MapProperty<String, StringProperty> ratings;
 
     public DataSetBase(int id,
                        String title,
@@ -25,14 +26,17 @@ public class DataSetBase implements DataSet {
                        String genre,
                        State state,
                        String link,
-                       List<String> tags) {
+                       String storagePath,
+                       List<String> tags,
+                       Map<String, String> ratings) {
         this.id.set(String.valueOf(id));
         this.title.set(title);
         this.artist.set(artist);
         this.genre.set(genre);
         this.state.set(state.toString());
         this.link.set(link);
-
+        this.storagePath.set(storagePath);
+        this.ratings = mapToMapProperty(ratings);
         this.tags = listToListProperty(tags);
     }
 
@@ -81,7 +85,9 @@ public class DataSetBase implements DataSet {
     public String getGenre() { return genre.get(); }
     public String getState() { return state.get().toString(); }
     public String getLink() { return link.get(); }
+    public String getStoragePath() { return storagePath.get(); }
     public List<String> getTags() { return listPropertyToList(tags); }
+    public Map<String, String> getRatings() { return mapPropertyToMap(ratings); }
 
     // ----- Property Getter -----
 
@@ -91,7 +97,9 @@ public class DataSetBase implements DataSet {
     public StringProperty genreProperty() { return genre; }
     public StringProperty stateProperty() { return state; }
     public StringProperty linkProperty() { return link; }
+    public StringProperty storagePathProperty() { return storagePath; }
     public ListProperty<StringProperty> tagsProperty() { return tags; }
+    public MapProperty<String, StringProperty> ratingsProperty() { return ratings; }
 
     // ----- Setter -----
     public void setId(String id) { this.id.set(id); };
@@ -100,6 +108,8 @@ public class DataSetBase implements DataSet {
     public void setGenre(String genre) { this.genre.set(genre); }
     public void setState(String state) { this.state.set(state); }
     public void setLink(String link) { this.link.set(link); }
+    public void setStoragePath(String storagePath) { this.storagePath.set(storagePath); }
     public void setTags(List<String> tags) { this.tags = listToListProperty(tags); }
+    public void setRatings(Map<String, String> ratings) { this.ratings = mapToMapProperty(ratings); }
 
 }

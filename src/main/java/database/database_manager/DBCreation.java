@@ -2,6 +2,10 @@ package database.database_manager;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBCreation extends DBHelper{
 
@@ -32,7 +36,7 @@ public class DBCreation extends DBHelper{
         try {
             if (file.createNewFile()) {
                 System.out.println("Database created: " + file.getName());
-                firstDBSetup();
+                creatingTables();
             } else {
                 System.out.println("Database already exists.");
             }
@@ -42,18 +46,26 @@ public class DBCreation extends DBHelper{
     }
 
 
-    // Initialize all tables in the database
-    private static void firstDBSetup() {
-        DBArtists.createTable();
-        DBGenres.createTable();
-        DBGames.createTable();
-        DBStories.createTable();
-        DBVideos.createTable();
-        DBTags.createTable();
-        DBPlayed.createTable();
-        DBRatings.createTable();
-        DBGames_Tags.createTable();
-        DBStories_Tags.createTable();
-        DBVideos_Tags.createTable();
+    private static void creatingTables() {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement()) {
+
+            enableForeignKey(conn);
+
+            stmt.executeUpdate(DBMediaTypes.createTableSQL);
+            stmt.executeUpdate(DBArtists.createTableSQL);
+            stmt.executeUpdate(DBGenres.createTableSQL);
+            stmt.executeUpdate(DBMediaEntries.getCreateTableSQL());
+            stmt.executeUpdate(DBTags.createTableSQL);
+            stmt.executeUpdate(DBPlayed.createTableSQL);
+            stmt.executeUpdate(DBRatings.createTableSQL);
+            stmt.executeUpdate(DBMedia_Tags.createTableSQL);
+            stmt.executeUpdate(DBRatingPlatforms.createTableSQL);
+            stmt.executeUpdate(DBMediaTypes_RatingPlatforms.createTableSQL);
+
+        } catch (SQLException e) {
+            System.out.println("Creating tables failed.");
+            e.printStackTrace();
+        }
     }
 }

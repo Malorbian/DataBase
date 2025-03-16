@@ -1,16 +1,16 @@
 package database.model;
 
-import database.enums.Discipline;
+import database.enums.MediaType;
 
 public class ArtistEntry {
     private Integer id;
     private  String name;
-    private Discipline discipline;
+    private MediaType mediaType;
 
-    public ArtistEntry(Integer id, String name, Discipline discipline) {
+    public ArtistEntry(Integer id, String name, MediaType mediaType) {
         this.id = id;
         this.name = name;
-        this.discipline = discipline;
+        this.mediaType = mediaType;
     }
 
     public Integer getId() {
@@ -19,6 +19,6 @@ public class ArtistEntry {
     public String getName() {
         return name;
     }
-    public String getDiscipline() { return discipline.toString(); }
+    public String getMediaType() { return mediaType.toString(); }
 
 }

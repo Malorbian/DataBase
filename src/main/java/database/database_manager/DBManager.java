@@ -1,11 +1,13 @@
 package database.database_manager;
 
+import database.enums.MediaType;
 import database.model.*;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.util.List;
 import java.util.Map;
@@ -58,13 +60,13 @@ public class DBManager {
         DBArtists.addArtist(artist);
     }
 
-    public static void addPlatform (String platformName) { DBRatings.addPlatform(platformName); }
+    public static void addPlatform (String platformName) { DBRatingPlatforms.addRatingPlatform(platformName); }
 
     public static void addTag(String tag) { DBTags.addTag(tag); }
 
     public static void addGenre(String genre) { DBGenres.addGenre(genre); }
 
-
+    /*
     // ----- Add game to database -----
 
     public static int addGame(GameDataSet game) {
@@ -112,6 +114,8 @@ public class DBManager {
         return video_id;
     }
 
+     */
+
 
 
     // -------------------------------------
@@ -127,9 +131,10 @@ public class DBManager {
 
     public static ObservableList<String> getTags() { return DBTags.getAllTags(); }
 
-    public static ObservableList<String> getPlatforms() { return DBRatings.getAllPlatforms(); }
+    public static ObservableMap<MediaType, String[]> getPlatforms() { return DBRatingPlatforms.getAllRatingPlatforms(); }
 
 
+    /*
     // ----- Get games from database -----
 
     public static ObservableList<GameDataSet> getGameDataSetCollection() {
@@ -180,6 +185,8 @@ public class DBManager {
 
         return videoDataSets;
     }
+
+     */
 
 
 
