@@ -5,7 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
 import java.sql.*;
-import java.util.*;
+import java.util.List;
 
 public class DBRatingPlatforms extends DBHelper{
 

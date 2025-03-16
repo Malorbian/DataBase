@@ -1,7 +1,7 @@
 package database.model.propertyModels;
 
 import database.enums.State;
-import database.model.StoryEntry;
+import database.model.mediaModels.StoryEntry;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

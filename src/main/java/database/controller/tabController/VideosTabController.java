@@ -2,11 +2,9 @@ package database.controller.tabController;
 
 import database.controller.MainController;
 import database.controller.addController.AddVideoController;
-import database.logic.Filter;
 import database.logic.FilterVideo;
 import database.model.propertyModels.VideoDataSet;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 

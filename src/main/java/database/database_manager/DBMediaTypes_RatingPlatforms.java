@@ -1,10 +1,9 @@
 package database.database_manager;
 
-import database.enums.MediaType;
-
-import java.sql.*;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class DBMediaTypes_RatingPlatforms extends DBHelper {
 

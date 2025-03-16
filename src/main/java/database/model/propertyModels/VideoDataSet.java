@@ -1,7 +1,7 @@
 package database.model.propertyModels;
 
 import database.enums.State;
-import database.model.VideoEntry;
+import database.model.mediaModels.VideoEntry;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

@@ -6,16 +6,8 @@ import database.logic.Filter;
 import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXDatePicker;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-
-import java.util.stream.Collectors;
 
 public class GamesTabController extends TabControllerHelper<GameDataSet, GamesTabController, AddGameController> {
 

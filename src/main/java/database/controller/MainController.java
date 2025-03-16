@@ -4,10 +4,6 @@ package database.controller;
 import database.controller.tabController.GamesTabController;
 import database.controller.tabController.StoriesTabController;
 import database.controller.tabController.VideosTabController;
-import database.enums.MediaType;
-import database.enums.State;
-import database.enums.TableNames;
-import database.model.PlayedEntry;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.StoryDataSet;
 import database.model.propertyModels.VideoDataSet;
@@ -29,7 +25,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class MainController extends ControllerHelper implements Initializable {
 

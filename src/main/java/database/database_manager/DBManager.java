@@ -1,16 +1,9 @@
 package database.database_manager;
 
 import database.enums.MediaType;
-import database.model.*;
-import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.StoryDataSet;
-import database.model.propertyModels.VideoDataSet;
-import javafx.collections.FXCollections;
+import database.model.ArtistEntry;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-
-import java.util.List;
-import java.util.Map;
 
 public class DBManager {
 

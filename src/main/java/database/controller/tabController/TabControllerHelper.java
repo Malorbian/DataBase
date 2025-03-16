@@ -7,7 +7,6 @@ import database.enums.State;
 import database.logic.Filter;
 import database.model.propertyModels.DataSet;
 import database.model.propertyModels.DataSetBase;
-import database.model.propertyModels.GameDataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;

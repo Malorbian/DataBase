@@ -1,7 +1,6 @@
 package database.logic;
 
 import database.controller.tabController.TabController;
-import database.controller.tabController.VideosTabController;
 import database.enums.TriState;
 import database.model.propertyModels.DataSet;
 import io.github.palexdev.materialfx.controls.MFXCheckListView;
@@ -11,7 +10,6 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
-import javafx.scene.control.TextField;
 
 import java.util.HashSet;
 import java.util.List;
