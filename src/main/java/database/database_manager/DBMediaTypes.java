@@ -3,7 +3,8 @@ package database.database_manager;
 import database.enums.MediaType;
 
 import java.sql.Connection;
-import java.util.List;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
 class DBMediaTypes extends DBHelper {
 
@@ -13,15 +14,19 @@ class DBMediaTypes extends DBHelper {
             "CONSTRAINT unique_name UNIQUE (name)" +
             ");";
 
-    static final String addEntrySQL = "INSERT INTO media (name) VALUES (?)";
+    static final String addEntrySQL = "INSERT OR IGNORE INTO media_types(name) VALUES (?)";
 
 
-    static void addMediaType(String mediaTypeName) {
-        addEntryByString(addEntrySQL, mediaTypeName);
-    }
-
-    static void addMediaType(List<String> mediaTypeNames) {
-        addEntriesByList(addEntrySQL, mediaTypeNames);
+    static void addMediaTypes(Connection conn) {
+        try (PreparedStatement ps = conn.prepareStatement(addEntrySQL)) {
+            for (MediaType mediaType : MediaType.values()) {
+                ps.setString(1, mediaType.toString());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static int getMediaTypeId(MediaType mediaTypeName, Connection conn) {

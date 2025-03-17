@@ -24,7 +24,7 @@ class DBRatingPlatforms extends DBHelper{
     static void addRatingPlatform(String ratingPlatform, MediaType mediaType) {
         String addEntrySQL = "INSERT OR IGNORE INTO ratingPlatforms (name) VALUES (?)";
         String mediaTypeRelationSql = "INSERT OR IGNORE INTO ratingPlatforms_mediaTypes(ratingPlatforms_id, mediaType_id) VALUES (?, ?)";
-        addEntryByString(ratingPlatform, mediaType, addEntrySQL, mediaTypeRelationSql);
+        addEntryByStringWithRelations(ratingPlatform, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
     static int getRatingPlatformId(String ratingPlatform, int mediaType_Id, Connection conn) {

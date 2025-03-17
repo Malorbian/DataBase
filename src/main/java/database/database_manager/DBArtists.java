@@ -23,7 +23,7 @@ class DBArtists extends DBHelper {
     static void addArtist(ArtistEntry artist) {
         String addEntrySQL = "INSERT OR IGNORE INTO artists (name) VALUES (?)";
         String mediaTypeRelationSql = "INSERT OR IGNORE INTO artists_mediaTypes(artists_id, mediaType_id) VALUES (?, ?)";
-        addEntryByString(artist.getName(), artist.getMediaType(), addEntrySQL, mediaTypeRelationSql);
+        addEntryByStringWithRelations(artist.getName(), artist.getMediaType(), addEntrySQL, mediaTypeRelationSql);
     }
 
     static int getArtistId(String artist, int mediaType_Id, Connection conn) {

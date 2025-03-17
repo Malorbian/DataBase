@@ -24,7 +24,7 @@ class DBGenres extends DBHelper {
     static void addGenre(String genre, MediaType mediaType) {
         String addEntrySQL = "INSERT OR IGNORE INTO genres (name) VALUES (?)";
         String mediaTypeRelationSql = "INSERT OR IGNORE INTO genres_mediaTypes(genres_id, mediaType_id) VALUES (?, ?)";
-        addEntryByString(genre, mediaType, addEntrySQL, mediaTypeRelationSql);
+        addEntryByStringWithRelations(genre, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
     static int getGenreId(String genre, int mediaType_Id, Connection conn) {

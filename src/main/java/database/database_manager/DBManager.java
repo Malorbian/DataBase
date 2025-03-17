@@ -75,6 +75,9 @@ public class DBManager {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(mediaEntrySQL)) {
 
+            // Init MediaTypes table
+            DBMediaTypes.addMediaTypes(conn);
+
             // Clear all lists
             logicDataClass.getMediaEntries().clear();
             logicDataClass.getEntryTypes().clear();

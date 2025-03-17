@@ -52,7 +52,7 @@ class DBHelper {
         return -1;
     }
 
-    static void addEntryByString(String entryName, MediaType mediaType, String addEntrySQL, String mediaTypeRelationSql) {
+    static void addEntryByStringWithRelations(String entryName, MediaType mediaType, String addEntrySQL, String mediaTypeRelationSql) {
 
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement ps = conn.prepareStatement(addEntrySQL, Statement.RETURN_GENERATED_KEYS);

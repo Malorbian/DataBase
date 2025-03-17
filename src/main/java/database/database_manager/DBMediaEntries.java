@@ -18,7 +18,7 @@ class DBMediaEntries extends DBHelper {
         try (PreparedStatement ps = conn.prepareStatement(addEntrySql, Statement.RETURN_GENERATED_KEYS)) {
 
             int mediaTypeId = DBMediaTypes.getMediaTypeId(mediaType, conn);
-            int entryTypeId = DBEntryTypes.getTypeId(entry.getType(), conn);
+            int entryTypeId = DBEntryTypes.getEntryTypeId(entry.getType(), mediaTypeId, conn);
             int artistId = DBArtists.getArtistId(entry.getArtist(), mediaTypeId, conn);
             int genreId = DBGenres.getGenreId(entry.getGenre(), mediaTypeId, conn);
 

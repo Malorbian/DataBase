@@ -24,7 +24,7 @@ class DBEntryTypes extends DBHelper{
     static void addEntryType(String entryType, MediaType mediaType) {
         String addEntrySQL = "INSERT OR IGNORE INTO entryTypes (name) VALUES (?)";
         String mediaTypeRelationSql = "INSERT OR IGNORE INTO entryTypes_mediaTypes(entryTypes_id, mediaType_id) VALUES (?, ?)";
-        addEntryByString(entryType, mediaType, addEntrySQL, mediaTypeRelationSql);
+        addEntryByStringWithRelations(entryType, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
     static int getEntryTypeId(String entryType, int mediaType_Id, Connection conn) {
