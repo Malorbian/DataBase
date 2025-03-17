@@ -1,56 +1,37 @@
 package database.database_manager;
 
-import javafx.collections.ObservableList;
+import database.enums.MediaType;
 
-import java.sql.*;
+import java.sql.Connection;
 
-public class DBGenres extends DBHelper {
+class DBGenres extends DBHelper {
 
-    static final String createTableSQL = "CREATE TABLE IF NOT EXISTS genres (" +
-            "genre_id INTEGER PRIMARY KEY AUTOINCREMENT , " +
+    static final String createGenresTableSQL = "CREATE TABLE IF NOT EXISTS genres (" +
+            "genre_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "name TEXT, " +
             "CONSTRAINT unique_name UNIQUE (name)" +
             ");";
 
+    static final String createGenres_MediaTypeTableSQL = "CREATE TABLE IF NOT EXISTS genres_mediaTypes (" +
+            "genre_id INTEGER, " +
+            "mediaType_id INTEGER, " +
+            "CONSTRAINT fk_mediaType_id FOREIGN KEY (mediaType_id) REFERENCES media_types(mediaType_id), " +
+            "CONSTRAINT fk_genre_id FOREIGN KEY (genre_id) REFERENCES genres(genre_id), " +
+            "CONSTRAINT pk_genre_id_mediaType_id PRIMARY KEY (mediaType_id, genre_id)" +
+            ");";
 
-    public static void addGenre(String genre) {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            addGenre(genre, conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+    static void addGenre(String genre, MediaType mediaType) {
+        String addEntrySQL = "INSERT OR IGNORE INTO genres (name) VALUES (?)";
+        String mediaTypeRelationSql = "INSERT OR IGNORE INTO genres_mediaTypes(genres_id, mediaType_id) VALUES (?, ?)";
+        addEntryByString(genre, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
-    public static void addGenre(String genre, Connection conn) {
-        String sql = "INSERT OR IGNORE INTO genres (name) VALUES (?)";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, genre);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static ObservableList<String> getAllGenres() {
-        String sql = "SELECT name FROM genres";
-        return getEntries(sql);
-    }
-
-    protected static int getGenreId(String name, Connection conn) {
-
-        String sql = "SELECT genre_id FROM genres WHERE LOWER(name) = LOWER(?)";
-        try (PreparedStatement pStmt = conn.prepareStatement(sql)) {
-            // Check if artist already exists
-            pStmt.setString(1, name);
-
-            ResultSet rs = pStmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("genre_id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
+    static int getGenreId(String genre, int mediaType_Id, Connection conn) {
+        String sql = "SELECT genre_id FROM genres " +
+                    "LEFT JOIN mediaTypes_genres ON mediaTypes_genres.genre_id = genres.genre_id " +
+                    "WHERE LOWER(name) = LOWER(?) AND mediaType_id = " + mediaType_Id;
+        return getIdByString(sql, genre, conn);
     }
 
 }

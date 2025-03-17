@@ -1,9 +1,12 @@
 package database.database_manager;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-public class DBMedia_Tags extends DBHelper {
+class DBMedia_Tags extends DBHelper {
 
     static final String createTableSQL = "CREATE TABLE IF NOT EXISTS media_tags (" +
             "medium_id INTEGER, " +
@@ -14,12 +17,11 @@ public class DBMedia_Tags extends DBHelper {
             ");";
 
 
-    protected static void addMediumTagRelations(int medium_id, List<String> tags) {
+    static void addMediumTagRelations(int medium_id, List<String> tags, Connection conn) {
         String insertRelationSQL = "INSERT OR IGNORE INTO media_tags(medium_id, tag_id) VALUES (?, ?)";
         String selectTagIdSQL = "SELECT tag_id FROM tags WHERE name = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement selectTagStmt = conn.prepareStatement(selectTagIdSQL);
+        try (PreparedStatement selectTagStmt = conn.prepareStatement(selectTagIdSQL);
              PreparedStatement insertRelationStmt = conn.prepareStatement(insertRelationSQL)) {
 
             conn.setAutoCommit(false); // Beginne eine Transaktion

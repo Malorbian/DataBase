@@ -2,9 +2,8 @@ package database.database_manager;
 
 import database.model.ConsumedEntry;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 class DBConsumedMedia extends DBHelper {
 
@@ -16,16 +15,7 @@ class DBConsumedMedia extends DBHelper {
             "CONSTRAINT pk_medium_id PRIMARY KEY (medium_id)" +
             ");";
 
-
-    public static void addConsumedMedium(ConsumedEntry played) {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            addConsumedMedium(played, conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void addConsumedMedium(ConsumedEntry consumed, Connection conn) {
+    static void addConsumedMedium(ConsumedEntry consumed, Connection conn) {
         try {
             String sql = "INSERT INTO consumed(medium_id, date, version) VALUES(?, ?, ?) " +
                     "ON CONFLICT(medium_id) DO UPDATE SET date = excluded.date, version = excluded.version;";
@@ -38,22 +28,5 @@ class DBConsumedMedia extends DBHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public static List<ConsumedEntry> getConsumedMedia() {
-        List<ConsumedEntry> consumedMedia = new ArrayList<>();
-        String sql = "SELECT * FROM played_games";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                consumedMedia.add(new ConsumedEntry(rs.getInt("game_id"),
-                        rs.getString("date"),
-                        rs.getString("version")));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return consumedMedia;
     }
 }

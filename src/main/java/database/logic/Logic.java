@@ -2,11 +2,9 @@ package database.logic;
 
 import database.database_manager.DBManager;
 import database.enums.MediaType;
-import database.enums.TableNames;
 import database.model.ArtistEntry;
-import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.LiteratureDataSet;
-import database.model.propertyModels.VideoDataSet;
+import database.model.LogicDataClass;
+import database.model.propertyModels.DataSet;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
@@ -15,16 +13,7 @@ import java.nio.file.Paths;
 public class Logic {
     private static Logic instance;
 
-    private ObservableList<GameDataSet> games;
-    private ObservableList<LiteratureDataSet> stories;
-    private ObservableList<VideoDataSet> videos;
-    private ObservableList<String> genres;
-    private ObservableList<String> tags;
-    private ObservableList<String> artistsGames;
-    private ObservableList<String> artistsStories;
-    private ObservableList<String> artistsVideos;
-    private ObservableList<String> platforms;
-
+    private final LogicDataClass logicDataClass;
 
     protected static final String DB_Default_Name = "Data.db";
     protected static final String App_Default_PATH = Paths.get(System.getProperty("user.home"), "AppData", "Local", "AppDatabase").toString();
@@ -36,6 +25,8 @@ public class Logic {
 
 
     private Logic() {
+        logicDataClass = new LogicDataClass();
+        logicDataClass.loadData();
         //DBManager.initDefaultDatabase();
         //reloadData();
     }
@@ -47,23 +38,6 @@ public class Logic {
         return instance;
     }
 
-
-    // ----- Constructor Helper -----
-
-
-
-    /*
-    public void reloadData() {
-        games = DBManager.getGameDataSetCollection();
-        stories = DBManager.getStoryDataSetCollection();
-        videos = DBManager.getVideoDataSetCollection();
-        genres = DBManager.getGenres();
-        tags = DBManager.getTags();
-        fillArtistLists();
-        platforms = DBManager.getPlatforms();
-    }
-
-     */
 
 
 
@@ -88,6 +62,10 @@ public class Logic {
         //reloadData();
     }
 
+    public void loadDB() {
+        logicDataClass.loadData();
+    }
+
     private void updatePaths(String dbNamePath) {
         Path path = Paths.get(dbNamePath);
         DB_Name = path.getFileName().toString();
@@ -102,91 +80,29 @@ public class Logic {
     // -------------------------------------------
 
 
-    // ----- Add artists/genres/tags/platforms -----
+    // ----- Add artist/genre/tag/platform -----
 
-    public void addPlatform(String platformName) {
-        if (platformName == null || platforms.contains(platformName)) { return; }
-        platforms.add(platformName);
-        DBManager.addPlatform(platformName);
+    public void addArtist(ArtistEntry artist) {
+        logicDataClass.addArtist(artist);
     }
 
-    public void addTag(String tag) {
-        if (tag == null || tags.contains(tag)) { return; }
-        tags.add(tag);
-        DBManager.addTag(tag);
+    public void addGenre(String genre, MediaType mediaType) {
+        logicDataClass.addGenre(genre, mediaType);
     }
 
-    public void addGenre(String genre) {
-        if (genre == null || genres.contains(genre)) { return; }
-        genres.add(genre);
-        DBManager.addGenre(genre);
+    public void addTag(String tag, MediaType mediaType) {
+        logicDataClass.addTag(tag, mediaType);
     }
 
-    public void addArtistName(ArtistEntry artist) {
-        if (artist.getName() == null) { return; }
-        switch (MediaType.valueOf(artist.getMediaType())) {
-            case GAMES:
-                if (artistsGames.contains(artist.getName())) { return; }
-                artistsGames.add(artist.getName());
-                break;
-            case LITERATURE:
-                if (artistsStories.contains(artist.getName())) { return; }
-                artistsStories.add(artist.getName());
-                break;
-            case VIDEO:
-                if (artistsVideos.contains(artist.getName())) { return; }
-                artistsVideos.add(artist.getName());
-                break;
-            default:
-                break;
-        }
-        DBManager.addArtist(artist);
+    public void addRatingPlatform(String ratingPlatform, MediaType mediaType) {
+        logicDataClass.addRatingPlatform(ratingPlatform, mediaType);
     }
 
-    public void addStringToTable(String string, TableNames tableName) {
-        if (tableName == TableNames.ARTIST) {
-            throw new IllegalArgumentException("MediaType must be provided for ARTIST table");
-        }
-        addStringToTable(string, tableName, null);
+    // ----- Add meda entry -----
+
+    public void addMediaEntry(DataSet entry, MediaType mediaType) {
+        logicDataClass.addMediaEntry(entry, mediaType);
     }
-
-    public void addStringToTable(String string, TableNames tableName, MediaType mediaType) {
-        switch (tableName) {
-            case GENRE:
-                addGenre(string);
-                break;
-            case TAG:
-                addTag(string);
-                break;
-            case PLATFORM:
-                addPlatform(string);
-                break;
-            case ARTIST:
-                addArtistName(new ArtistEntry(-1, string, mediaType));
-                break;
-            default:
-                break;
-        }
-    }
-
-
-    // ----- Add game/story/video -----
-
-    public void addGame(GameDataSet game) {
-        //game.setId(String.valueOf(DBManager.addGame(game)));
-        games.add(game);
-    }
-
-    public void addStory(LiteratureDataSet story) {
-        //story.setId(String.valueOf(DBManager.addStory(story)));
-        stories.add(story);
-    }
-
-    public void addVideo(VideoDataSet video) {
-        //video.setId(String.valueOf(DBManager.addVideo(video)));
-        videos.add(video);
-    }
-
 
 
 
@@ -198,26 +114,28 @@ public class Logic {
 
     // ----- Get artists/genres/tags/platforms -----
 
-    public ObservableList<String> getArtistsGames() { return artistsGames; }
+    public ObservableList<String> getArtists(MediaType mediaType) {
+        return logicDataClass.getArtists().get(mediaType);
+    }
 
-    public ObservableList<String> getArtistsStories() { return artistsStories; }
+    public ObservableList<String> getGenres(MediaType mediaType) {
+        return logicDataClass.getGenres().get(mediaType);
+    }
 
-    public ObservableList<String> getArtistsVideos() { return artistsVideos; }
+    public ObservableList<String> getTags(MediaType mediaType) {
+        return logicDataClass.getTags().get(mediaType);
+    }
 
-    public ObservableList<String> getGenres() { return genres; }
-
-    public ObservableList<String> getTags() { return tags; }
-
-    public ObservableList<String> getPlatforms() { return platforms; }
+    public ObservableList<String> getPlatforms(MediaType mediaType) {
+        return logicDataClass.getRatingPlatforms().get(mediaType);
+    }
 
 
-    // ----- Get games/stories/videos -----
+    // ----- Get media entries -----
 
-    public ObservableList<GameDataSet> getGames() { return games; }
-
-    public ObservableList<LiteratureDataSet> getStories() { return stories; }
-
-    public ObservableList<VideoDataSet> getVideos() { return videos; }
+    public ObservableList<DataSet> getMediaEntries(MediaType mediaType) {
+        return logicDataClass.getMediaEntries().get(mediaType);
+    }
 
 
     // ----- Get database path data -----

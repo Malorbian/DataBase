@@ -3,48 +3,47 @@ package database.database_manager;
 import database.enums.MediaType;
 import database.enums.State;
 import database.model.propertyModels.DataSet;
-import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.LiteratureDataSet;
-import database.model.propertyModels.VideoDataSet;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class DBMediaEntries extends DBHelper {
+class DBMediaEntries extends DBHelper {
 
 
     // ----- Add methods -----
 
-    public static <T extends DataSet> void addEntry(T entry) {
-        try (Connection conn = DriverManager.getConnection(DB_URL)){
-            String sql = "INSERT INTO media_entries(mediaType_id, entryType_id, title, artist_id, genre_id, state, link, storagePath, length) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    static <T extends DataSet> int addEntry(T entry, MediaType mediaType, Connection conn) {
+        String addEntrySql = "INSERT INTO media_entries(mediaType_id, entryType_id, title, artist_id, genre_id, state, link, storagePath, length) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(addEntrySql, Statement.RETURN_GENERATED_KEYS)) {
 
-                int mediaTypeId = DBMediaTypes.getMediaTypeId(getMediaType(entry).toString(), conn);
-                int entryTypeId = DBEntryTypes.getTypeId(entry.getType(), conn);
-                int artistId = DBArtists.getArtistId(entry.getArtist(), MediaType.LITERATURE, conn);
-                int genreId = DBGenres.getGenreId(entry.getGenre(), conn);
+            int mediaTypeId = DBMediaTypes.getMediaTypeId(mediaType, conn);
+            int entryTypeId = DBEntryTypes.getTypeId(entry.getType(), conn);
+            int artistId = DBArtists.getArtistId(entry.getArtist(), mediaTypeId, conn);
+            int genreId = DBGenres.getGenreId(entry.getGenre(), mediaTypeId, conn);
 
-                ps.setInt(1, mediaTypeId);
-                ps.setInt(2, entryTypeId);
-                ps.setString(3, entry.getTitle());
-                ps.setInt(4, artistId);
-                ps.setInt(5, genreId);
-                ps.setString(6, entry.getState());
-                ps.setString(7, entry.getLink());
-                ps.setString(8, entry.getStoragePath());
-                ps.setDouble(9, Double.parseDouble(entry.getLength()));
+            ps.setInt(1, mediaTypeId);
+            ps.setInt(2, entryTypeId);
+            ps.setString(3, entry.getTitle());
+            ps.setInt(4, artistId);
+            ps.setInt(5, genreId);
+            ps.setString(6, entry.getState());
+            ps.setString(7, entry.getLink());
+            ps.setString(8, entry.getStoragePath());
+            ps.setDouble(9, parseDouble(entry.getLength()));
 
+            ps.executeUpdate();
 
-                ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+
         }
+        return -1;
     }
 
 
@@ -74,20 +73,18 @@ public class DBMediaEntries extends DBHelper {
 
     // ----- Helper methods -----
 
-    private static <T extends DataSet> MediaType getMediaType(T entry) {
-        return switch (entry) {
-            case LiteratureDataSet ignored -> MediaType.LITERATURE;
-            case GameDataSet ignored -> MediaType.GAMES;
-            case VideoDataSet ignored -> MediaType.VIDEO;
-            case null, default ->
-                    throw new IllegalArgumentException("Unsupported entry type");
-        };
-    }
-
     private static String stateCheckHelper() {
         return Arrays.stream(State.values())
                 .map(type -> "'" + type.name() + "'")
                 .collect(Collectors.joining(","));
+    }
+
+    private static double parseDouble(String doubleString) {
+        try {
+            return Double.parseDouble(doubleString);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
 }

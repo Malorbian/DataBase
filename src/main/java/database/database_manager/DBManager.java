@@ -5,10 +5,15 @@ import database.enums.MediaType;
 import database.enums.State;
 import database.logic.Logic;
 import database.model.ArtistEntry;
+import database.model.ConsumedEntry;
 import database.model.LogicDataClass;
+import database.model.RatingEntry;
+import database.model.propertyModels.DataSet;
 import database.model.propertyModels.GameDataSet;
 import database.model.propertyModels.LiteratureDataSet;
 import database.model.propertyModels.VideoDataSet;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.sql.*;
 import java.util.*;
@@ -62,7 +67,7 @@ public class DBManager {
                 "LEFT JOIN media_entries_tags met ON me.entry_id = met.medium_id " +
                 "LEFT JOIN tags ON met.tag_id = tags.tag_id " +
                 "LEFT JOIN ratings rat ON me.entry_id = ratings.medium_id " +
-                "LEFT JOIN rating_platforms rp ON rat.platform_id = rp.platform_id " +
+                "LEFT JOIN rating_platforms rp ON rat.ratingPlatform_id = rp.ratingPlatform_id " +
                 "LEFT JOIN consumed con ON me.entry_id = con.medium_id " +
                 "GROUP BY me.entry_id";
 
@@ -70,6 +75,15 @@ public class DBManager {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(mediaEntrySQL)) {
 
+            // Clear all lists
+            logicDataClass.getMediaEntries().clear();
+            logicDataClass.getEntryTypes().clear();
+            logicDataClass.getArtists().clear();
+            logicDataClass.getGenres().clear();
+            logicDataClass.getTags().clear();
+            logicDataClass.getRatingPlatforms().clear();
+
+            // Initialize sets for entryTypes, artists, genres, tags, platforms
             Map<MediaType, Set<String>> entryTypes = new HashMap<>();
             Map<MediaType, Set<String>> artists = new HashMap<>();
             Map<MediaType, Set<String>> genres = new HashMap<>();
@@ -77,6 +91,7 @@ public class DBManager {
             Map<MediaType, Set<String>> platforms = new HashMap<>();
             initSets(entryTypes, artists, genres, tags, platforms);
 
+            // Add media entries to logicDataClass
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String mediaType = rs.getString("mediaType");
@@ -98,6 +113,7 @@ public class DBManager {
                 String date = rs.getString("date");
                 String version = rs.getString("version");
 
+                // Add media entry to logicDataClass depending on mediaType and adding entryTypes, artists, genres, tags, platforms to sets
                 switch (mediaType) {
                     case "GAME":
                         GameDataSet gds = new GameDataSet(id, entryType, title, artist, genre, state, link, path, length, tagList, ratings, date, version);
@@ -120,6 +136,7 @@ public class DBManager {
                 }
             }
 
+            // Add sets to logicDataClass
             addSetsToLogicData(entryTypes, artists, genres, tags, platforms, logicDataClass);
 
         } catch (SQLException e) {
@@ -173,24 +190,23 @@ public class DBManager {
                                            Map<MediaType, Set<String>> tagsMap,
                                            Map<MediaType, Set<String>> platformsMap,
                                            LogicDataClass logicDataClass) {
-        addSetsToLogicDataHelper(entryTypesMap, logicDataClass);
-        addSetsToLogicDataHelper(artistsMap, logicDataClass);
-        addSetsToLogicDataHelper(genresMap, logicDataClass);
-        addSetsToLogicDataHelper(tagsMap, logicDataClass);
-        addSetsToLogicDataHelper(platformsMap, logicDataClass);
+        addSetsToLogicDataHelper(entryTypesMap, logicDataClass.getEntryTypes());
+        addSetsToLogicDataHelper(artistsMap, logicDataClass.getArtists());
+        addSetsToLogicDataHelper(genresMap, logicDataClass.getGenres());
+        addSetsToLogicDataHelper(tagsMap, logicDataClass.getTags());
+        addSetsToLogicDataHelper(platformsMap, logicDataClass.getRatingPlatforms());
     }
 
-    private static void addSetsToLogicDataHelper (Map<MediaType, Set<String>> entryTypesMap, LogicDataClass logicDataClass) {
+    private static void addSetsToLogicDataHelper (Map<MediaType, Set<String>> entryTypesMap,
+                                                  ObservableMap<MediaType, ObservableList<String>> logicMap) {
         for (Map.Entry<MediaType, Set<String>> entry : entryTypesMap.entrySet()) {
             MediaType mediaType = entry.getKey();
             Set<String> entryTypes = entry.getValue();
             for (String entryType : entryTypes) {
-                logicDataClass.getEntryTypes().get(mediaType).add(entryType);
+                logicMap.get(mediaType).add(entryType);
             }
         }
     }
-
-
 
 
 
@@ -201,65 +217,44 @@ public class DBManager {
 
     // ----- Add artists/genres/tags/platforms -----
 
-    public static void addArtist(ArtistEntry artist) {
-        DBArtists.addArtist(artist);
+    public static void addArtist(ArtistEntry artist) { DBArtists.addArtist(artist); }
+
+    public static void addRatingPlatform(String platformName, MediaType mediaType) { DBRatingPlatforms.addRatingPlatform(platformName, mediaType); }
+
+    public static void addTag(String tag, MediaType mediaType) { DBTags.addTag(tag, mediaType); }
+
+    public static void addGenre(String genre, MediaType mediaType) { DBGenres.addGenre(genre, mediaType); }
+
+
+    // ----- Add media_entry to database -----
+
+    public static <T extends DataSet> int addMediaEntry(T dataSet, MediaType mediaType) {
+        try (Connection conn = DriverManager.getConnection(Logic.getInstance().getDB_URL())) {
+
+            conn.setAutoCommit(false);
+
+            // Add media entry
+            int entryID = DBMediaEntries.addEntry(dataSet, mediaType, conn);
+
+            // Add media_tags relation
+            DBMedia_Tags.addMediumTagRelations(entryID, dataSet.getTags(), conn);
+
+            // Add ratings
+            DBRatings.addRating(new RatingEntry(entryID, dataSet.getRatings()), conn);
+
+            // Add played
+            if (dataSet.getClass().isInstance(GameDataSet.class)) {
+                GameDataSet gameDataSet = (GameDataSet) dataSet;
+                DBConsumedMedia.addConsumedMedium(new ConsumedEntry(entryID, gameDataSet.getLastPlayedDate(), gameDataSet.getLastPlayedVersion()), conn);
+            }
+
+            conn.commit();
+
+            return entryID;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
-
-    public static void addPlatform (String platformName) { DBRatingPlatforms.addRatingPlatform(platformName); }
-
-    public static void addTag(String tag) { DBTags.addTag(tag); }
-
-    public static void addGenre(String genre) { DBGenres.addGenre(genre); }
-
-    /*
-    // ----- Add game to database -----
-
-    public static int addGame(GameDataSet game) {
-        // Add game
-        DBGames.addGame(new GameEntry(game));
-
-        // Add game_tags relation
-        int game_id = DBGames.getGameId(game.getTitle(), game.getArtist());
-        DBGames_Tags.addGameTagRelations(game_id, game.getTags());
-
-        // Add ratings
-        DBRatings.addRating(new RatingEntry(game_id, game.getRatings()));
-
-        // Add played
-        DBConsumedMedia.addPlayedGame(new ConsumedEntry(game_id, game.getLastPlayedDate(), game.getLastPlayedVersion()));
-
-        return game_id;
-    }
-
-
-    // ----- Add story to database -----
-
-    public static int addStory(LiteratureDataSet story) {
-        // Add story
-        DBStories.addStory(new LiteratureEntry(story));
-
-        // Add story_tags relation
-        int story_id = DBStories.getStoryId(story.getTitle(), story.getArtist());
-        DBStories_Tags.addStoryTagRelations(story_id, story.getTags());
-
-        return story_id;
-    }
-
-
-    // ----- Add video to database -----
-
-    public static int addVideo(VideoDataSet video) {
-        // Add video
-        DBVideos.addVideo(new VideoEntry(video));
-
-        // Add video_tags relation
-        int video_id = DBVideos.getVideoId(video.getTitle(), video.getArtist(), Double.parseDouble(video.getLength()));
-        DBVideos_Tags.addVideoTagRelations(video_id, video.getTags());
-
-        return video_id;
-    }
-
-     */
-
 
 }

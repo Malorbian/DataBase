@@ -1,11 +1,11 @@
 package database.database_manager;
 
+import database.enums.MediaType;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 
-public class DBMediaTypes extends DBHelper {
+class DBMediaTypes extends DBHelper {
 
     static final String createTableSQL = "CREATE TABLE IF NOT EXISTS media_types (" +
             "mediaType_id integer PRIMARY KEY AUTOINCREMENT, " +
@@ -24,17 +24,9 @@ public class DBMediaTypes extends DBHelper {
         addEntriesByList(addEntrySQL, mediaTypeNames);
     }
 
-    static int getMediaTypeId(String mediaTypeName) {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            return getMediaTypeId(mediaTypeName, conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
+    static int getMediaTypeId(MediaType mediaTypeName, Connection conn) {
+        String sql = "SELECT mediaType_id FROM media WHERE name = ?";
+        return getIdByString(sql, mediaTypeName.toString(), conn);
     }
 
-    static int getMediaTypeId(String mediaTypeName, Connection conn) {
-        String sql = "SELECT mediaType_id FROM media WHERE name = ?";
-        return getIdByString(sql, mediaTypeName, conn);
-    }
 }

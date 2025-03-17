@@ -53,6 +53,36 @@ public class LogicDataClass {
     public ObservableMap<MediaType, ObservableList<String>> getRatingPlatforms() { return ratingPlatforms; }
 
 
+    public void addArtist(ArtistEntry artist) {
+        if (artist.getMediaType() == null) return;
+        artists.get(artist.getMediaType()).add(artist.getName());
+        DBManager.addArtist(artist);
+    }
+
+    public void addGenre(String genre, MediaType mediaType) {
+        genres.get(mediaType).add(genre);
+        DBManager.addGenre(genre, mediaType);
+    }
+
+    public void addTag(String tag, MediaType mediaType) {
+        tags.get(mediaType).add(tag);
+        DBManager.addTag(tag, mediaType);
+    }
+
+    public void addRatingPlatform(String ratingPlatform, MediaType mediaType) {
+        ratingPlatforms.get(mediaType).add(ratingPlatform);
+        DBManager.addRatingPlatform(ratingPlatform, mediaType);
+    }
+
+    public void addMediaEntry(DataSet entry, MediaType mediaType) {
+        int dataSetId = DBManager.addMediaEntry(entry, mediaType);
+        entry.setId(String.valueOf(dataSetId));
+        mediaEntries.get(mediaType).add(entry);
+
+    }
+
+
+
     private void constructorHelper() {
         for (MediaType mediaType : MediaType.values()) {
             mediaEntries.put(mediaType, FXCollections.observableArrayList());

@@ -1,40 +1,36 @@
 package database.database_manager;
 
+import database.enums.MediaType;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.List;
 
-public class DBEntryTypes extends DBHelper{
+class DBEntryTypes extends DBHelper{
 
-    static final String createTableSQL = "CREATE TABLE IF NOT EXISTS entry_types (" +
-            "type_id integer PRIMARY KEY AUTOINCREMENT, " +
+    static final String createEntryTypesTableSQL = "CREATE TABLE IF NOT EXISTS entry_types (" +
+            "entryType_id integer PRIMARY KEY AUTOINCREMENT, " +
             "name TEXT NOT NULL, " +
             "CONSTRAINT unique_name UNIQUE (name)" +
             ");";
+    
+    static final String createEntryTypes_MediaTypesTableSQL = "CREATE TABLE IF NOT EXISTS entryTypes_mediaTypes (" +
+            "entryType_id integer, " +
+            "mediaType_id integer, " +
+            "CONSTRAINT fk_entryType_id FOREIGN KEY (entryType_id) REFERENCES entry_types(entryType_id), " +
+            "CONSTRAINT fk_mediaType_id FOREIGN KEY (mediaType_id) REFERENCES media_types(mediaType_id), " +
+            "CONSTRAINT pk_entryType_id_mediaType_id PRIMARY KEY (type_id, mediaType_id)" +
+            ");";
 
-    static final String addEntrySQL = "INSERT INTO types (name) VALUES (?)";
 
-
-    static void addType(String typeName) {
-        addEntryByString(addEntrySQL, typeName);
+    static void addEntryType(String entryType, MediaType mediaType) {
+        String addEntrySQL = "INSERT OR IGNORE INTO entryTypes (name) VALUES (?)";
+        String mediaTypeRelationSql = "INSERT OR IGNORE INTO entryTypes_mediaTypes(entryTypes_id, mediaType_id) VALUES (?, ?)";
+        addEntryByString(entryType, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
-    static void addType(List<String> typeNames) {
-        addEntriesByList(addEntrySQL, typeNames);
-    }
-
-    static int getTypeId(String typeName) {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            return getTypeId(typeName, conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    static int getTypeId(String typeName, Connection conn) {
-        String sql = "SELECT type_id FROM types WHERE name = ?";
-        return getIdByString(sql, typeName, conn);
+    static int getEntryTypeId(String entryType, int mediaType_Id, Connection conn) {
+        String sql = "SELECT entryType_id FROM entryTypes " +
+                "LEFT JOIN mediaTypes_entryTypes ON mediaTypes_entryTypes.entryType_id = entryTypes.entryType_id " +
+                "WHERE LOWER(name) = LOWER(?) AND mediaType_id = " + mediaType_Id;
+        return getIdByString(sql, entryType, conn);
     }
 }

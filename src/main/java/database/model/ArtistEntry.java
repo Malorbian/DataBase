@@ -19,6 +19,6 @@ public class ArtistEntry {
     public String getName() {
         return name;
     }
-    public String getMediaType() { return mediaType.toString(); }
+    public MediaType getMediaType() { return mediaType; }
 
 }

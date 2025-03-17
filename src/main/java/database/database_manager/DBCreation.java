@@ -54,15 +54,27 @@ public class DBCreation extends DBHelper{
             enableForeignKey(conn);
 
             stmt.executeUpdate(DBMediaTypes.createTableSQL);
-            stmt.executeUpdate(DBArtists.createTableSQL);
-            stmt.executeUpdate(DBGenres.createTableSQL);
+
+            stmt.executeUpdate(DBArtists.createArtistsTableSQL);
+            stmt.executeUpdate(DBArtists.createArtist_MediaTypeTableSQL);
+
+            stmt.executeUpdate(DBGenres.createGenresTableSQL);
+            stmt.executeUpdate(DBGenres.createGenres_MediaTypeTableSQL);
+
+            stmt.executeUpdate(DBRatingPlatforms.createRatingPlatformTableSQL);
+            stmt.executeUpdate(DBRatingPlatforms.createRatingPlatform_MediaTypeTableSQL);
+
+            stmt.executeUpdate(DBEntryTypes.createEntryTypesTableSQL);
+            stmt.executeUpdate(DBEntryTypes.createEntryTypes_MediaTypesTableSQL);
+
             stmt.executeUpdate(DBMediaEntries.getCreateTableSQL());
-            stmt.executeUpdate(DBTags.createTableSQL);
-            stmt.executeUpdate(DBConsumedMedia.createTableSQL);
-            stmt.executeUpdate(DBRatings.createTableSQL);
+
+            stmt.executeUpdate(DBTags.createTagsTableSQL);
             stmt.executeUpdate(DBMedia_Tags.createTableSQL);
-            stmt.executeUpdate(DBRatingPlatforms.createTableSQL);
-            stmt.executeUpdate(DBMediaTypes_RatingPlatforms.createTableSQL);
+
+            stmt.executeUpdate(DBConsumedMedia.createTableSQL);
+
+            stmt.executeUpdate(DBRatings.createTableSQL);
 
             conn.commit();
 
