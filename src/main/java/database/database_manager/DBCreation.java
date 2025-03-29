@@ -73,7 +73,7 @@ public class DBCreation extends DBHelper{
             stmt.executeUpdate(DBMediaEntries.getCreateTableSQL());
 
             stmt.executeUpdate(DBTags.createTagsTableSQL);
-            stmt.executeUpdate(DBMedia_Tags.createTableSQL);
+            stmt.executeUpdate(DBMediaEntries_Tags.createTableSQL);
 
             stmt.executeUpdate(DBConsumedMedia.createTableSQL);
 

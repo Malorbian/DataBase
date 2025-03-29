@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-class DBMedia_Tags extends DBHelper {
+class DBMediaEntries_Tags extends DBHelper {
 
     static final String createTableSQL = "CREATE TABLE IF NOT EXISTS mediaEntries_tags (" +
             "medium_id INTEGER, " +
@@ -18,7 +18,7 @@ class DBMedia_Tags extends DBHelper {
 
 
     static void addMediumTagRelations(int medium_id, List<String> tags, Connection conn) {
-        String insertRelationSQL = "INSERT OR IGNORE INTO media_tags(medium_id, tag_id) VALUES (?, ?)";
+        String insertRelationSQL = "INSERT OR IGNORE INTO mediaEntries_tags(medium_id, tag_id) VALUES (?, ?)";
         String selectTagIdSQL = "SELECT tag_id FROM tags WHERE name = ?";
 
         try (PreparedStatement selectTagStmt = conn.prepareStatement(selectTagIdSQL);

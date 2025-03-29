@@ -192,7 +192,7 @@ public class DBManager {
             int entryID = DBMediaEntries.addEntry(dataSet, mediaType, conn);
 
             // Add media_tags relation
-            DBMedia_Tags.addMediumTagRelations(entryID, dataSet.getTags(), conn);
+            DBMediaEntries_Tags.addMediumTagRelations(entryID, dataSet.getTags(), conn);
 
             // Add ratings
             DBRatings.addRating(new RatingEntry(entryID, dataSet.getRatings()), conn);
