@@ -1,8 +1,8 @@
 package database.controller;
 
+import database.enums.AttributeTypes;
 import database.enums.MediaType;
 import database.enums.State;
-import database.enums.AttributeTypes;
 import database.model.DataSet;
 import io.github.palexdev.materialfx.controls.*;
 import javafx.beans.binding.BooleanBinding;

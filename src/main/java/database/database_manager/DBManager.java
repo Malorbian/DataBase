@@ -4,14 +4,17 @@ package database.database_manager;
 import database.enums.MediaType;
 import database.enums.State;
 import database.logic.Logic;
-import database.model.*;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
+import database.model.ArtistEntry;
+import database.model.DataSet;
+import database.model.LogicDataClass;
+import database.model.RatingEntry;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBManager {
 

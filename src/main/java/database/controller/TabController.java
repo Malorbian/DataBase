@@ -3,7 +3,6 @@ package database.controller;
 import database.enums.MediaType;
 import database.enums.State;
 import database.logic.Filter;
-import database.logic.Logic;
 import database.model.DataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;

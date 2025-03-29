@@ -2,7 +2,6 @@ package database.controller;
 
 
 import database.enums.MediaType;
-import database.model.DataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -21,7 +20,10 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class MainController extends ControllerHelper implements Initializable {
 
