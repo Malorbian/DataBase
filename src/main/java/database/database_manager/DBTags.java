@@ -23,7 +23,7 @@ class DBTags extends DBHelper {
     
     static void addTag(String tag, MediaType mediaType) {
         String addEntrySQL = "INSERT OR IGNORE INTO tags (name) VALUES (?)";
-        String mediaTypeRelationSql = "INSERT OR IGNORE INTO tags_mediaTypes(tags_id, mediaType_id) VALUES (?, ?)";
+        String mediaTypeRelationSql = "INSERT OR IGNORE INTO tags_mediaTypes(tag_id, mediaType_id) VALUES (?, ?)";
         addEntryByStringWithRelations(tag, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 

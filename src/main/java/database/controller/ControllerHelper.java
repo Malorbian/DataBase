@@ -2,8 +2,8 @@ package database.controller;
 
 import database.controller.customFXElements.TfInputListCell;
 import database.controller.customFXElements.TriStateListCell;
+import database.enums.AttributeTypes;
 import database.enums.MediaType;
-import database.enums.TableNames;
 import database.enums.TriState;
 import database.logic.Logic;
 import io.github.palexdev.materialfx.controls.MFXCheckListView;
@@ -78,7 +78,7 @@ public class ControllerHelper {
         comboBox.setItems(obsItemList);
     }
 
-    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, TableNames tableName, MediaType mediaType, Label statusLabel) {
+    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, AttributeTypes attributeType, MediaType mediaType, Label statusLabel) {
         ObservableList<String> obsItemList = FXCollections.observableArrayList(items);
         comboBox.setItems(obsItemList);
         comboBox.setOnCancel(s -> comboBox.setText(comboBox.getSelectedItem()));
@@ -86,22 +86,16 @@ public class ControllerHelper {
             try {
                 if (!obsItemList.contains(s)) {
                     obsItemList.add(s);
-                    logic.addStringToTable(s, tableName, mediaType);
+                    logic.addByAttributeType(s, attributeType, mediaType);
                 }
                 comboBox.selectItem(s);
-                statusLabel.setText("Added " + s + " to " + tableName);
+                statusLabel.setText("Added " + s + " to " + attributeType);
             } catch (Exception e) {
                 statusLabel.setText("Error: " + e.getMessage());
             }
         });
     }
 
-    protected void initializeEditableComboBox(MFXComboBox<String> comboBox, List<String> items, TableNames tableName, Label statusLabel) {
-        if (tableName == TableNames.ARTIST) {
-            throw new IllegalArgumentException("MediaType must be provided for ARTIST table");
-        }
-        initializeEditableComboBox(comboBox, items, tableName, null, statusLabel);
-    }
 
 
     // ----- CheckListView -----

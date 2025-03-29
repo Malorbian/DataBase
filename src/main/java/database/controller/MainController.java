@@ -1,12 +1,8 @@
 package database.controller;
 
 
-import database.controller.tabController.GamesTabController;
-import database.controller.tabController.StoriesTabController;
-import database.controller.tabController.VideosTabController;
-import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.LiteratureDataSet;
-import database.model.propertyModels.VideoDataSet;
+import database.enums.MediaType;
+import database.model.DataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,8 +21,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController extends ControllerHelper implements Initializable {
 
@@ -67,15 +62,18 @@ public class MainController extends ControllerHelper implements Initializable {
     @FXML
     Label lblStatus;
     @FXML
+    Label lblMediaCount;
+    @FXML
     Label lblCurrentPath;
 
 
     // ---------- Non-FXML ----------
 
     // Controllers
-    GamesTabController gamesTabController;
-    StoriesTabController storiesTabController;
-    VideosTabController videosTabController;
+    Map<MediaType, TabController> tabControllers = new HashMap<>();
+
+    TabController currentTab;
+
 
 
     public MainController (Stage stage) {
@@ -84,52 +82,37 @@ public class MainController extends ControllerHelper implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        initGamesTab();
-        initStoriesTab();
-        initVideosTab();
+        initTabs();
         initMenuItems();
         initWindowButtons();
         initializeWindowDragging(stage, rootPane);
-        setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
         updateCurrentPathLabel();
+        updateMediaCountLabel();
     }
 
+    private void initTabs() {
+        tabPane.getTabs().clear();
+        for (MediaType mediaType : MediaType.values()) {
+            TabController tabController = new TabController(stage, this, mediaType);
+            tabControllers.put(mediaType, tabController);
+            // Create new Tab for each MediaType
+            Tab tab = new Tab(mediaType.toString());
+            tab.setOnSelectionChanged(event -> {tabController.updateTable();});
 
-    private void initGamesTab() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/gamesTab.fxml"));
-            gamesTabController = new GamesTabController(stage, this);
-            fxmlLoader.setController(gamesTabController);
-            Parent content = fxmlLoader.load();
-            tabGames.setContent(content);
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/tab.fxml"));
+                fxmlLoader.setController(tabController);
+                Parent content = fxmlLoader.load();
+                tab.setContent(content);
+                tabPane.getTabs().add(tab);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
+
     }
 
-    private void initStoriesTab() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/storiesTab.fxml"));
-            storiesTabController = new StoriesTabController(stage, this);
-            fxmlLoader.setController(storiesTabController);
-            Parent content = fxmlLoader.load();
-            tabStories.setContent(content);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initVideosTab() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/videosTab.fxml"));
-            videosTabController = new VideosTabController(stage, this);
-            fxmlLoader.setController(videosTabController);
-            Parent content = fxmlLoader.load();
-            tabVideos.setContent(content);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void initMenuItems() {
         miNew.setOnAction(createNewDatabase());
@@ -155,6 +138,7 @@ public class MainController extends ControllerHelper implements Initializable {
 
     // ----- Helper Methods -----
 
+
     private EventHandler<ActionEvent> openDatabase() {
         return event -> {
             FileChooser fileChooser = new FileChooser();
@@ -162,8 +146,11 @@ public class MainController extends ControllerHelper implements Initializable {
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
                 logic.openDatabase(file.getPath());
-                updateData();
+                currentTab = tabControllers.get(MediaType.GAMES);
+                currentTab.updateTable();
                 updateCurrentPathLabel();
+                updateMediaCountLabel();
+                lblStatus.setText("Database opened: " + file.getPath());
             }
         };
     }
@@ -181,46 +168,11 @@ public class MainController extends ControllerHelper implements Initializable {
                     file = new File(path);
                 }
                 logic.createNewDatabase(file.getPath());
-                updateData();
-                updateCurrentPathLabel();
+                lblStatus.setText("Database created at " + file.getPath());
             }
         };
     }
 
-    /*
-    private EventHandler<ActionEvent> addDataSet(int entryCount, int tagCount, int tagsPerEntryCount) {
-        List<String> tags = new ArrayList<>();
-        for (int i = 0; i < tagCount; i++) {
-            String tag = "Tag" + i;
-            tags.add(tag);
-            logic.addTag(tag);
-        }
-        String artist = "Artist 0";
-        String genre = "Genre 0";
-        logic.addStringToTable(artist, TableNames.ARTIST, MediaType.GAMES);
-        logic.addStringToTable(genre, TableNames.GENRE);
-        return event -> {
-            for (int i = 0; i < entryCount; i++) {
-                List<String> entryTags = new ArrayList<>();
-                for (int j = 0; j < tagsPerEntryCount; j++) {
-                    entryTags.add(tags.get((i + j) % tags.size()));
-                }
-                String name = "Game " + i;
-                logic.addGame(new GameDataSet(-1,
-                        name,
-                        artist,
-                        genre,
-                        State.DEV,
-                        null,
-                        null,
-                        new HashMap<>(),
-                        entryTags,
-                        new ConsumedEntry(-1, "?", "?")));
-            }
-        };
-    }
-
-     */
 
     private void fileChooserHelper(FileChooser fileChooser, String title) {
         fileChooser.setTitle(title);
@@ -230,12 +182,6 @@ public class MainController extends ControllerHelper implements Initializable {
         fileChooser.getExtensionFilters().add(extFilter);
     }
 
-    private void updateData() {
-        gamesTabController.updateTable();
-        //storiesTabController.updateTable();
-        //videosTabController.updateTable();
-        setStatusCurrentMediaCount(logic.getGames(), logic.getStories(), logic.getVideos());
-    }
 
     private int getListSize(List<?> list) {
         return list == null ? 0 : list.size();
@@ -250,15 +196,20 @@ public class MainController extends ControllerHelper implements Initializable {
 
     // Setter
 
-    public void setStatusCurrentMediaCount(List<GameDataSet> games, List<LiteratureDataSet> stories, List<VideoDataSet> videos) {
-        String status = "Games: " + getListSize(games) + "/" + getListSize(logic.getGames()) +
-                "  |  Stories: " + getListSize(stories) + "/" + getListSize(logic.getStories()) +
-                "  |  Videos: " + getListSize(videos) + "/" + getListSize(logic.getVideos());
-        lblStatus.setText(status);
-    }
 
     public void updateCurrentPathLabel() {
         lblCurrentPath.setText("Current Database: " + logic.getDBName());
+    }
+
+    private void updateMediaCountLabel() {
+        StringBuilder sb = new StringBuilder();
+        for (MediaType mediaType : MediaType.values()) {
+            sb.append(mediaType.toString()).append(": ")
+                    .append(tabControllers.get(mediaType).getFilter().getFilteredData().size()).append("|")
+                    .append(logic.getMediaEntries(mediaType).size())
+                    .append(")   ");
+        }
+        lblMediaCount.setText(sb.substring(0, sb.length() - 2));
     }
 
 

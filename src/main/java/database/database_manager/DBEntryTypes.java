@@ -17,13 +17,13 @@ class DBEntryTypes extends DBHelper{
             "mediaType_id integer, " +
             "CONSTRAINT fk_entryType_id FOREIGN KEY (entryType_id) REFERENCES entry_types(entryType_id), " +
             "CONSTRAINT fk_mediaType_id FOREIGN KEY (mediaType_id) REFERENCES media_types(mediaType_id), " +
-            "CONSTRAINT pk_entryType_id_mediaType_id PRIMARY KEY (type_id, mediaType_id)" +
+            "CONSTRAINT pk_entryType_id_mediaType_id PRIMARY KEY (entryType_id, mediaType_id)" +
             ");";
 
 
     static void addEntryType(String entryType, MediaType mediaType) {
         String addEntrySQL = "INSERT OR IGNORE INTO entryTypes (name) VALUES (?)";
-        String mediaTypeRelationSql = "INSERT OR IGNORE INTO entryTypes_mediaTypes(entryTypes_id, mediaType_id) VALUES (?, ?)";
+        String mediaTypeRelationSql = "INSERT OR IGNORE INTO entryTypes_mediaTypes(entryType_id, mediaType_id) VALUES (?, ?)";
         addEntryByStringWithRelations(entryType, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 

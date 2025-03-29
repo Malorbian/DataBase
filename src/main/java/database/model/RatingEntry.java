@@ -1,7 +1,5 @@
 package database.model;
 
-import database.model.propertyModels.GameDataSet;
-
 import java.util.Map;
 
 public class RatingEntry {
@@ -12,12 +10,6 @@ public class RatingEntry {
         this.medium_id = medium_id;
         this.ratings = ratings;
     }
-
-    public RatingEntry(GameDataSet game) {
-        this(Integer.valueOf(game.getId()), game.getRatings());
-    }
-
-
 
     public Integer getMediumId() {
         return medium_id;

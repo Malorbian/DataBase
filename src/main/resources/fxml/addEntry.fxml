@@ -21,6 +21,8 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXCheckListView?>
 <?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 <?import javafx.geometry.Insets?>
@@ -32,10 +34,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
-<BorderPane fx:id="rootPane" maxWidth="400.0" prefHeight="373.0" prefWidth="396.0" styleClass="border-pane" stylesheets="@../css/DefaultTheme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="rootPane" maxWidth="400.0" prefHeight="686.0" prefWidth="396.0" styleClass="border-pane" stylesheets="@../css/DefaultTheme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <GridPane alignment="CENTER" hgap="20.0" maxHeight="430.0" maxWidth="620.0" prefHeight="430.0" prefWidth="620.0" stylesheets="@../css/DefaultTheme.css" vgap="10.0">
+      <GridPane alignment="CENTER" hgap="20.0" maxHeight="658.0" maxWidth="620.0" prefHeight="647.0" prefWidth="394.0" stylesheets="@../css/DefaultTheme.css" vgap="10.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="150.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="200.0" />
@@ -43,8 +44,12 @@
         <rowConstraints>
           <RowConstraints maxHeight="18.0" minHeight="18.0" prefHeight="18.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="38.0" minHeight="38.0" prefHeight="38.0" vgrow="SOMETIMES" />
@@ -56,42 +61,54 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <children>
-            <StackPane prefHeight="150.0" prefWidth="150.0" styleClass="grid-background" GridPane.rowSpan="8">
+            <StackPane prefHeight="150.0" prefWidth="150.0" styleClass="grid-background" GridPane.rowSpan="13">
                <GridPane.margin>
                   <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
                </GridPane.margin>
             </StackPane>
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Video" />
-            <MFXComboBox fx:id="cbType" floatMode="BORDER" floatingText="Type*" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="1" />
-            <MFXTextField fx:id="tfName" floatMode="BORDER" floatingText="Title*" prefHeight="38.0" prefWidth="150.0" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <MFXComboBox fx:id="cbArtist" allowEdit="true" floatMode="BORDER" floatingText="Artist*" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <MFXComboBox fx:id="cbGenre" allowEdit="true" floatMode="BORDER" floatingText="Genre" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.rowIndex="4" />
-            <MFXComboBox fx:id="cbState" floatMode="BORDER" floatingText="State" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="5" />
-            <MFXFilterComboBox fx:id="fcbRatings" floatMode="BORDER" floatingText="Ratings" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="6" />
-            <MFXTextField fx:id="tfLink" floatMode="BORDER" floatingText="Link" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="7" />
-            <StackPane prefHeight="273.0" prefWidth="200.0" styleClass="grid-background" GridPane.columnIndex="1" GridPane.rowSpan="8">
+            <MFXComboBox fx:id="cbEntryType" allowEdit="true" floatMode="BORDER" floatingText="Type*" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.rowIndex="1" />
+            <MFXComboBox fx:id="cbFranchise" allowEdit="true" floatMode="BORDER" floatingText="Franchise" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.rowIndex="2" />
+            <MFXTextField fx:id="tfName" floatMode="BORDER" floatingText="Title*" prefHeight="38.0" prefWidth="150.0" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <MFXComboBox fx:id="cbArtist" allowEdit="true" floatMode="BORDER" floatingText="Artist*" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <MFXComboBox fx:id="cbGenre" allowEdit="true" floatMode="BORDER" floatingText="Genre" prefHeight="38.0" prefWidth="150.0" scrollOnOpen="true" selectable="true" GridPane.rowIndex="5" />
+            <MFXComboBox fx:id="cbState" floatMode="BORDER" floatingText="State" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="6" />
+            <MFXFilterComboBox fx:id="fcbRatings" floatMode="BORDER" floatingText="Ratings" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="9" />
+            <MFXTextField fx:id="tfLink" floatMode="BORDER" floatingText="Link" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="8" />
+            <MFXTextField fx:id="tfLength" floatMode="BORDER" floatingText="Length" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="7" />
+            <MFXDatePicker fx:id="dpConsumedDate" floatMode="BORDER" floatingText="Last Consumed" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="10" />
+            <MFXTextField fx:id="tfConsumedVersion" floatMode="BORDER" floatingText="Cunsumed Version" prefHeight="38.0" prefWidth="150.0" GridPane.rowIndex="11" />
+            <StackPane prefHeight="273.0" prefWidth="200.0" styleClass="grid-background" GridPane.columnIndex="1" GridPane.rowSpan="13">
                <GridPane.margin>
                   <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
                </GridPane.margin>
             </StackPane>
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Tags" GridPane.columnIndex="1" />
-            <MFXCheckListView fx:id="clvTags" prefWidth="200.0" styleClass="mfx-check-list-view" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="6" />
-            <MFXTextField fx:id="tfAddTag" floatMode="BORDER" floatingText="Add new Tag" prefHeight="38.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <MFXButton fx:id="btnCancel" buttonType="RAISED" depthLevel="LEVEL1" prefHeight="35.0" prefWidth="184.0" text="Cancel" GridPane.rowIndex="8">
+            <MFXCheckListView fx:id="clvTags" prefWidth="200.0" styleClass="mfx-check-list-view" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="10" />
+            <MFXTextField fx:id="tfAddTag" floatMode="BORDER" floatingText="Add new Tag" prefHeight="38.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+            <MFXButton fx:id="btnCancel" buttonType="RAISED" depthLevel="LEVEL1" prefHeight="35.0" prefWidth="184.0" text="Cancel" GridPane.rowIndex="12">
                <GridPane.margin>
                   <Insets top="5.0" />
                </GridPane.margin></MFXButton>
-            <MFXButton fx:id="btnSaveEntry" buttonType="RAISED" contentDisplay="CENTER" depthLevel="LEVEL1" graphicTextGap="1.0" minHeight="20.0" minWidth="20.0" prefHeight="35.0" prefWidth="201.0" text="Save Entry" GridPane.columnIndex="1" GridPane.rowIndex="8">
+            <MFXButton fx:id="btnSaveEntry" buttonType="RAISED" contentDisplay="CENTER" depthLevel="LEVEL1" graphicTextGap="1.0" minHeight="20.0" minWidth="20.0" prefHeight="35.0" prefWidth="201.0" text="Save Entry" GridPane.columnIndex="1" GridPane.rowIndex="12">
                <GridPane.margin>
                   <Insets top="5.0" />
                </GridPane.margin></MFXButton>
-            <Label fx:id="lblStatus" maxHeight="15.0" prefHeight="15.0" prefWidth="383.0" text="*Mandatory" GridPane.columnSpan="2147483647" GridPane.rowIndex="9">
+            <Label maxHeight="15.0" prefHeight="15.0" prefWidth="383.0" text="*Mandatory" GridPane.rowIndex="13">
                <GridPane.margin>
-                  <Insets />
+                  <Insets top="5.0" />
                </GridPane.margin>
                <font>
                   <Font name="System Italic" size="10.0" />
                </font>
+            </Label>
+            <Label fx:id="lblStatus" maxHeight="15.0" prefHeight="15.0" prefWidth="383.0" text="Status" GridPane.columnIndex="1" GridPane.rowIndex="13">
+               <font>
+                  <Font name="System Italic" size="10.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets top="5.0" />
+               </GridPane.margin>
             </Label>
          </children>
       </GridPane>
@@ -99,7 +116,7 @@
    <top>
       <GridPane fx:id="header" BorderPane.alignment="CENTER">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="289.4285888671875" minWidth="10.0" prefWidth="191.8572017124721" />
+          <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="289.4285888671875" minWidth="10.0" prefWidth="191.8572017124721" />
           <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="414.00001525878906" minWidth="10.0" prefWidth="190.71422685895647" />
         </columnConstraints>
         <rowConstraints>
@@ -114,7 +131,7 @@
                   <Insets bottom="-5.0" left="-5.0" right="-5.0" top="-5.0" />
                </GridPane.margin>
             </StackPane>
-            <Label text="Add Literature To Database">
+            <Label text="Add Entry To Database">
                <GridPane.margin>
                   <Insets left="5.0" />
                </GridPane.margin>

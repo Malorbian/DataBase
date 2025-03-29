@@ -1,10 +1,11 @@
 package database.logic;
 
 import database.database_manager.DBManager;
+import database.enums.AttributeTypes;
 import database.enums.MediaType;
 import database.model.ArtistEntry;
+import database.model.DataSet;
 import database.model.LogicDataClass;
-import database.model.propertyModels.DataSet;
 import javafx.collections.ObservableList;
 
 import java.nio.file.Path;
@@ -25,10 +26,8 @@ public class Logic {
 
 
     private Logic() {
+        instance = this;
         logicDataClass = new LogicDataClass();
-        logicDataClass.loadData();
-        //DBManager.initDefaultDatabase();
-        //reloadData();
     }
 
     public static Logic getInstance() {
@@ -53,16 +52,12 @@ public class Logic {
     public void openDatabase(String dbNamePath) {
         updatePaths(dbNamePath);
         DBManager.changeDatabase();
-        //reloadData();
+        logicDataClass.loadData();
     }
 
     public void createNewDatabase(String dbNamePath) {
         updatePaths(dbNamePath);
         DBManager.createNewDatabase();
-        //reloadData();
-    }
-
-    public void loadDB() {
         logicDataClass.loadData();
     }
 
@@ -82,6 +77,14 @@ public class Logic {
 
     // ----- Add artist/genre/tag/platform -----
 
+    public void addEntryType(String entryType, MediaType mediaType) {
+        logicDataClass.addEntryType(entryType, mediaType);
+    }
+
+    public void addFranchise(String franchise, String entryType, MediaType mediaType) {
+        logicDataClass.addFranchise(franchise, entryType, mediaType);
+    }
+
     public void addArtist(ArtistEntry artist) {
         logicDataClass.addArtist(artist);
     }
@@ -98,6 +101,23 @@ public class Logic {
         logicDataClass.addRatingPlatform(ratingPlatform, mediaType);
     }
 
+    public void addByAttributeType(String value, AttributeTypes attributeType, MediaType mediaType) {
+        switch (attributeType) {
+            case ARTIST:
+                logicDataClass.addArtist(new ArtistEntry(-1, value, mediaType));
+                break;
+            case GENRE:
+                logicDataClass.addGenre(value, mediaType);
+                break;
+            case TAG:
+                logicDataClass.addTag(value, mediaType);
+                break;
+            case Rating_PLATFORM:
+                logicDataClass.addRatingPlatform(value, mediaType);
+                break;
+        }
+    }
+
     // ----- Add meda entry -----
 
     public void addMediaEntry(DataSet entry, MediaType mediaType) {
@@ -112,7 +132,15 @@ public class Logic {
     // -----------------------------------------
 
 
-    // ----- Get artists/genres/tags/platforms -----
+    // ----- Get entryTypes/franchises/artists/genres/tags/platforms -----
+
+    public ObservableList<String> getEntryTypes(MediaType mediaType) {
+        return logicDataClass.getEntryTypes().get(mediaType);
+    }
+
+    public ObservableList<String> getFranchises(String entryType) {
+        return logicDataClass.getFranchises().get(entryType);
+    }
 
     public ObservableList<String> getArtists(MediaType mediaType) {
         return logicDataClass.getArtists().get(mediaType);

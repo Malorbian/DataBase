@@ -8,7 +8,7 @@ import java.util.List;
 
 class DBMedia_Tags extends DBHelper {
 
-    static final String createTableSQL = "CREATE TABLE IF NOT EXISTS media_tags (" +
+    static final String createTableSQL = "CREATE TABLE IF NOT EXISTS mediaEntries_tags (" +
             "medium_id INTEGER, " +
             "tag_id INTEGER, " +
             "CONSTRAINT fk_medium_id FOREIGN KEY (medium_id) REFERENCES media_entries(entry_id), " +

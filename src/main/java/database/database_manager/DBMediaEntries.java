@@ -2,7 +2,7 @@ package database.database_manager;
 
 import database.enums.MediaType;
 import database.enums.State;
-import database.model.propertyModels.DataSet;
+import database.model.DataSet;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -13,24 +13,26 @@ class DBMediaEntries extends DBHelper {
 
     // ----- Add methods -----
 
-    static <T extends DataSet> int addEntry(T entry, MediaType mediaType, Connection conn) {
-        String addEntrySql = "INSERT INTO media_entries(mediaType_id, entryType_id, title, artist_id, genre_id, state, link, storagePath, length) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    static int addEntry(DataSet entry, MediaType mediaType, Connection conn) {
+        String addEntrySql = "INSERT INTO media_entries(mediaType_id, entryType_id, franchise_id, title, artist_id, genre_id, state, link, storagePath, length) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(addEntrySql, Statement.RETURN_GENERATED_KEYS)) {
 
             int mediaTypeId = DBMediaTypes.getMediaTypeId(mediaType, conn);
-            int entryTypeId = DBEntryTypes.getEntryTypeId(entry.getType(), mediaTypeId, conn);
+            int entryTypeId = DBEntryTypes.getEntryTypeId(entry.getEntryType(), mediaTypeId, conn);
+            int franchiseId = DBFranchises.getFranchiseId(entry.getFranchise(), entryTypeId, conn);
             int artistId = DBArtists.getArtistId(entry.getArtist(), mediaTypeId, conn);
             int genreId = DBGenres.getGenreId(entry.getGenre(), mediaTypeId, conn);
 
             ps.setInt(1, mediaTypeId);
             ps.setInt(2, entryTypeId);
-            ps.setString(3, entry.getTitle());
-            ps.setInt(4, artistId);
-            ps.setInt(5, genreId);
-            ps.setString(6, entry.getState());
-            ps.setString(7, entry.getLink());
-            ps.setString(8, entry.getStoragePath());
-            ps.setDouble(9, parseDouble(entry.getLength()));
+            ps.setInt(3, franchiseId);
+            ps.setString(4, entry.getTitle());
+            ps.setInt(5, artistId);
+            ps.setInt(6, genreId);
+            ps.setString(7, entry.getState());
+            ps.setString(8, entry.getLink());
+            ps.setString(9, entry.getStoragePath());
+            ps.setDouble(10, parseDouble(entry.getLength()));
 
             ps.executeUpdate();
 
@@ -54,6 +56,7 @@ class DBMediaEntries extends DBHelper {
                 "entry_id INTEGER PRIMARY KEY AUTOINCREMENT , " +
                 "mediaType_id INTEGER NOT NULL, " +
                 "entryType_id INTEGER, " +
+                "franchise_id INTEGER, " +
                 "title TEXT NOT NULL, " +
                 "artist_id INTEGER NOT NULL, " +
                 "genre_id INTEGER, " +

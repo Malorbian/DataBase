@@ -1,9 +1,8 @@
 package database.database_manager;
 
-import database.model.ConsumedEntry;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 class DBConsumedMedia extends DBHelper {
 
@@ -15,15 +14,15 @@ class DBConsumedMedia extends DBHelper {
             "CONSTRAINT pk_medium_id PRIMARY KEY (medium_id)" +
             ");";
 
-    static void addConsumedMedium(ConsumedEntry consumed, Connection conn) {
+    static void addConsumedMedium(int id, LocalDate date, String version, Connection conn) {
         try {
             String sql = "INSERT INTO consumed(medium_id, date, version) VALUES(?, ?, ?) " +
                     "ON CONFLICT(medium_id) DO UPDATE SET date = excluded.date, version = excluded.version;";
-            try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, consumed.getId());
-                pstmt.setString(2, consumed.getDate());
-                pstmt.setString(3, consumed.getVersion());
-                pstmt.executeUpdate();
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                ps.setString(2, date.toString());
+                ps.setString(3, version);
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             e.printStackTrace();

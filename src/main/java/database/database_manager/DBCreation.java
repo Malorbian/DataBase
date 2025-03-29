@@ -67,6 +67,9 @@ public class DBCreation extends DBHelper{
             stmt.executeUpdate(DBEntryTypes.createEntryTypesTableSQL);
             stmt.executeUpdate(DBEntryTypes.createEntryTypes_MediaTypesTableSQL);
 
+            stmt.executeUpdate(DBFranchises.createFranchisesTableSQL);
+            stmt.executeUpdate(DBFranchises.createFranchises_EntryTypeTableSQL);
+
             stmt.executeUpdate(DBMediaEntries.getCreateTableSQL());
 
             stmt.executeUpdate(DBTags.createTagsTableSQL);

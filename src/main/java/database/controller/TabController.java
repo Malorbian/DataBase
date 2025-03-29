@@ -1,12 +1,10 @@
-package database.controller.tabController;
+package database.controller;
 
-import database.controller.ControllerHelper;
-import database.controller.MainController;
-import database.controller.addController.AddEntryController;
+import database.enums.MediaType;
 import database.enums.State;
 import database.logic.Filter;
-import database.model.propertyModels.DataSet;
-import database.model.propertyModels.DataSetBase;
+import database.logic.Logic;
+import database.model.DataSet;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -22,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -31,7 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class TabControllerHelper<T extends DataSet, U extends TabController, V extends AddEntryController> extends ControllerHelper implements TabController{
+public class TabController extends ControllerHelper{
 
     // -----------------------------------
     // ---------- FXML Elements ----------
@@ -43,7 +42,7 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
 
     // Table View
     @FXML
-    TableView<T> tvData;
+    TableView<DataSet> tvData;
 
     // Table Column Selection
     @FXML
@@ -55,24 +54,45 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
 
     // Filter
     @FXML
+    MFXFilterComboBox<String> fcBoxFilterType;
+    @FXML
+    MFXFilterComboBox<String> fcBoxFilterFranchise;
+    @FXML
     MFXTextField tfFilterName;
     @FXML
     MFXTextField tfFilterArtist;
+    @FXML
+    MFXButton btnFilterConsumed;
+    @FXML
+    MFXButton btnFilterDateComparison;
+    @FXML
+    MFXTextField tfFilterDate;
     @FXML
     MFXFilterComboBox<String> fcBoxFilterGenres;
     @FXML
     MFXFilterComboBox<String> fcBoxFilterStates;
     @FXML
     MFXFilterComboBox<String> fcBoxFilterTags;
+    @FXML
+    TextField tfFilterLengthMin;
+    @FXML
+    TextField tfFilterLengthMax;
+    @FXML
+    MFXButton btnFilterReset;
+    @FXML
+    MFXButton btnFilterSaveAsDefault;
 
 
-    Filter<U, T> filter;
+    Filter filter;
 
     MainController parentController;
 
+    MediaType mediaType;
 
-    public TabControllerHelper(Stage stage, MainController parentController) {
+
+    public TabController(Stage stage, MainController parentController, MediaType mediaType) {
         super(stage);
+        this.mediaType = mediaType;
         this.parentController = parentController;
     }
 
@@ -83,25 +103,35 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
         gridPaneRoot.prefHeightProperty().bind(parentController.getTabPane().heightProperty());
         gridPaneRoot.setPadding(new Insets(0,0,30,0));
 
-        initTriStateListViewComboBox(fcBoxFilterGenres, logic.getGenres());
+        // Initialize Filter Selectors
+        initTriStateListViewComboBox(fcBoxFilterGenres, logic.getGenres(mediaType));
         initializeCheckListComboBox(fcBoxFilterStates, State.getValues());
-        initTriStateListViewComboBox(fcBoxFilterTags, logic.getTags());
+        initTriStateListViewComboBox(fcBoxFilterTags, logic.getTags(mediaType));
 
-        init();
+        // Initialize Filter Buttons (Reset / Set Default)
+
+        // Initialize Data Table
+        initTable();
+
+        // Initialize Filter
+        this.filter = new Filter(this, mediaType);
+
+
+        // Initialize Add Media Entry Button
+        btnAddEntry.setOnAction(event -> openAddEntryWindow("/fxml/addEntry.fxml"));
     }
 
-    void initTable(List<String> typeFields) {
+    void initTable() {
         tvData.setPlaceholder(new Label("Load database or change filter settings"));
         tvData.getColumns().clear();
-        List<String> fields = getFieldsFromClass(DataSetBase.class);
-        fields.addAll(typeFields);
+        List<String> fields = getFieldsFromClass(DataSet.class);
         initializeTableView(tvData, fields);
         initCellFactory(tvData);
     }
 
-    void initCellFactory(TableView<T> tvData) {
+    void initCellFactory(TableView<DataSet> tvData) {
         // Tags Column
-        TableColumn<T, String> tagsColumn = (TableColumn<T, String>) getColumnByName(tvData, "Tags");
+        TableColumn<DataSet, String> tagsColumn = (TableColumn<DataSet, String>) getColumnByName(tvData, "Tags");
         tagsColumn.setCellValueFactory(data -> {
             ListProperty<StringProperty> tags = data.getValue().tagsProperty();
             String tagsString = tags.stream()
@@ -110,7 +140,7 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
             return new SimpleStringProperty(tagsString);
         });
         // Ratings Column
-        TableColumn<T, String> ratingColumn = (TableColumn<T, String>) getColumnByName(tvData, "Ratings");
+        TableColumn<DataSet, String> ratingColumn = (TableColumn<DataSet, String>) getColumnByName(tvData, "Ratings");
         ratingColumn.setCellValueFactory(data -> {
             MapProperty<String, StringProperty> ratings = data.getValue().ratingsProperty();
             String ratingString = ratings.entrySet().stream()
@@ -128,13 +158,11 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
     }
 
 
-    abstract void init();
-
-
-    void openAddEntryWindow(String fxmlPath, V controller, Stage stage) {
+    void openAddEntryWindow(String fxmlPath) {
         try {
+            Stage stage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
-            fxmlLoader.setController(controller);
+            fxmlLoader.setController(new AddMediaEntryController(stage, this, mediaType));
             Parent root = fxmlLoader.load();
             stage.initStyle(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -152,9 +180,20 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
     }
 
 
+
+    public MFXFilterComboBox<String> getFilterObjectTypes() { return fcBoxFilterType; }
+
+    public MFXFilterComboBox<String> getFilterObjectFranchises() { return fcBoxFilterFranchise; }
+
     public MFXTextField getFilterObjectTitle() { return tfFilterName; }
 
     public MFXTextField getFilterObjectArtist() { return tfFilterArtist; }
+
+    public MFXButton getFilterObjectConsumed() { return btnFilterConsumed; }
+
+    public MFXButton getFilterObjectDateComparison() { return btnFilterDateComparison; }
+
+    public MFXTextField getFilterObjectDate() { return tfFilterDate; }
 
     public MFXFilterComboBox<String> getFilterObjectGenres() { return fcBoxFilterGenres; }
 
@@ -162,5 +201,13 @@ public abstract class TabControllerHelper<T extends DataSet, U extends TabContro
 
     public MFXFilterComboBox<String> getFilterObjectTags() { return fcBoxFilterTags; }
 
+    public TextField getFilterObjectLengthMin() { return tfFilterLengthMin; }
+
+    public TextField getFilterObjectLengthMax() { return tfFilterLengthMax; }
+
+
+    public MediaType getMediaType() { return mediaType; }
+
+    public Filter getFilter() { return filter; }
 
 }

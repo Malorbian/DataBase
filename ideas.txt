@@ -1,5 +1,5 @@
 TODO:
-- batch processing for loading data
+- fix filter for new model
 
 
 Ideas:

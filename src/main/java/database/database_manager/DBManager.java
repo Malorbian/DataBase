@@ -4,18 +4,13 @@ package database.database_manager;
 import database.enums.MediaType;
 import database.enums.State;
 import database.logic.Logic;
-import database.model.ArtistEntry;
-import database.model.ConsumedEntry;
-import database.model.LogicDataClass;
-import database.model.RatingEntry;
-import database.model.propertyModels.DataSet;
-import database.model.propertyModels.GameDataSet;
-import database.model.propertyModels.LiteratureDataSet;
-import database.model.propertyModels.VideoDataSet;
+import database.model.*;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class DBManager {
@@ -48,25 +43,27 @@ public class DBManager {
                     "me.entry_id AS id, " +
                     "mt.name AS mediaType," +
                     "et.name AS entryType, " +
+                    "fra.name AS franchise , " +
                     "me.title AS title, " +
                     "art.name AS artist, " +
-                    "gen.name AS genre," +
-                    "me.state AS state," +
-                    "me.link AS link," +
+                    "gen.name AS genre, " +
+                    "me.state AS state, " +
+                    "me.link AS link, " +
                     "me.storagePath AS path, " +
-                    "me.length AS length " +
-                    "GROUP_CONCAT(DISTINCT tags.name ORDER BY tags.name, ', ') AS tags," +
-                    "GROUP_CONCAT(DISTINCT rp.name || ':' || rat.rating ORDER BY rp.name, ', ') AS ratings," +
+                    "me.length AS length, " +
+                    "GROUP_CONCAT(DISTINCT tags.name ORDER BY tags.name, ', ') AS tags, " +
+                    "GROUP_CONCAT(DISTINCT rp.name || ':' || rat.rating ORDER BY rp.name, ', ') AS ratings, " +
                     "con.date AS date, " +
                     "con.version AS version " +
                 "FROM media_entries me " +
                 "LEFT JOIN media_types mt ON me.mediaType_id = mt.mediaType_id " +
-                "LEFT JOIN entry_types et ON me.entryType_id = et.type_id " +
+                "LEFT JOIN entry_types et ON me.entryType_id = et.entryType_id " +
+                "LEFT JOIN franchises fra ON me.franchise_id = fra.franchise_id " +
                 "LEFT JOIN artists art ON me.artist_id = art.artist_id " +
                 "LEFT JOIN genres gen ON me.genre_id = gen.genre_id " +
-                "LEFT JOIN media_entries_tags met ON me.entry_id = met.medium_id " +
+                "LEFT JOIN mediaEntries_tags met ON me.entry_id = met.medium_id " +
                 "LEFT JOIN tags ON met.tag_id = tags.tag_id " +
-                "LEFT JOIN ratings rat ON me.entry_id = ratings.medium_id " +
+                "LEFT JOIN ratings rat ON me.entry_id = rat.medium_id " +
                 "LEFT JOIN rating_platforms rp ON rat.ratingPlatform_id = rp.ratingPlatform_id " +
                 "LEFT JOIN consumed con ON me.entry_id = con.medium_id " +
                 "GROUP BY me.entry_id";
@@ -79,26 +76,14 @@ public class DBManager {
             DBMediaTypes.addMediaTypes(conn);
 
             // Clear all lists
-            logicDataClass.getMediaEntries().clear();
-            logicDataClass.getEntryTypes().clear();
-            logicDataClass.getArtists().clear();
-            logicDataClass.getGenres().clear();
-            logicDataClass.getTags().clear();
-            logicDataClass.getRatingPlatforms().clear();
-
-            // Initialize sets for entryTypes, artists, genres, tags, platforms
-            Map<MediaType, Set<String>> entryTypes = new HashMap<>();
-            Map<MediaType, Set<String>> artists = new HashMap<>();
-            Map<MediaType, Set<String>> genres = new HashMap<>();
-            Map<MediaType, Set<String>> tags = new HashMap<>();
-            Map<MediaType, Set<String>> platforms = new HashMap<>();
-            initSets(entryTypes, artists, genres, tags, platforms);
+            logicDataClass.clearLists();
 
             // Add media entries to logicDataClass
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String mediaType = rs.getString("mediaType");
                 String entryType = rs.getString("entryType");
+                String franchise = rs.getString("franchise");
                 String title = rs.getString("title");
                 String artist = rs.getString("artist");
                 String genre = rs.getString("genre");
@@ -113,34 +98,46 @@ public class DBManager {
                 }
                 List<String> tagList = List.of(rs.getString("tags").split(", "));
                 Map<String, String> ratings = arrayToMap(rs.getString("ratings").split(", "));
-                String date = rs.getString("date");
+                String dateString = rs.getString("date");
+                LocalDate date;
+                try {
+                    date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yy"));
+                } catch (NullPointerException e) {
+                    date = null;
+                }
                 String version = rs.getString("version");
 
                 // Add media entry to logicDataClass depending on mediaType and adding entryTypes, artists, genres, tags, platforms to sets
-                switch (mediaType) {
-                    case "GAME":
-                        GameDataSet gds = new GameDataSet(id, entryType, title, artist, genre, state, link, path, length, tagList, ratings, date, version);
-                        logicDataClass.getMediaEntries().get(MediaType.GAMES).add(gds);
-                        addEntriesToSet(MediaType.GAMES, entryTypes, artists, genres, tags, platforms,
-                                entryType, artist, genre, tagList, ratings);
-                        break;
-                    case "LITERATURE":
-                        LiteratureDataSet sds = new LiteratureDataSet(id, entryType, title, artist, genre, state, link, path, length, tagList, ratings);
-                        logicDataClass.getMediaEntries().get(MediaType.LITERATURE).add(sds);
-                        addEntriesToSet(MediaType.LITERATURE, entryTypes, artists, genres, tags, platforms,
-                                entryType, artist, genre, tagList, ratings);
-                        break;
-                    case "VIDEO":
-                        VideoDataSet vds = new VideoDataSet(id, entryType, title, artist, genre, state, link, path, length, tagList, ratings);
-                        logicDataClass.getMediaEntries().get(MediaType.LITERATURE).add(vds);
-                        addEntriesToSet(MediaType.VIDEO, entryTypes, artists, genres, tags, platforms,
-                                entryType, artist, genre, tagList, ratings);
-                        break;
+                MediaType mt = MediaType.valueOf(mediaType);
+                DataSet dataSet = new DataSet(
+                        id,
+                        mt,
+                        entryType,
+                        franchise,
+                        title,
+                        artist,
+                        genre,
+                        state,
+                        link,
+                        path,
+                        length,
+                        date,
+                        version,
+                        tagList,
+                        ratings);
+                logicDataClass.getMediaEntries().get(mt).add(dataSet);
+                logicDataClass.addEntryType(entryType, mt);
+                logicDataClass.addFranchise(franchise, entryType, mt);
+                logicDataClass.addArtist(new ArtistEntry(-1, artist, mt));
+                logicDataClass.addGenre(genre, mt);
+                for (String tag : tagList) {
+                    logicDataClass.addTag(tag, mt);
+                }
+                for (String platform : ratings.keySet()) {
+                    logicDataClass.addRatingPlatform(platform, mt);
                 }
             }
 
-            // Add sets to logicDataClass
-            addSetsToLogicData(entryTypes, artists, genres, tags, platforms, logicDataClass);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -159,58 +156,6 @@ public class DBManager {
         return map;
     }
 
-    private static void initSets(Map<MediaType, Set<String>> entryTypesMap,
-                     Map<MediaType, Set<String>> artistsMap,
-                     Map<MediaType, Set<String>> genresMap,
-                     Map<MediaType, Set<String>> tagsMap,
-                     Map<MediaType, Set<String>> platformsMap) {
-        for (MediaType mediaType : MediaType.values()) {
-            entryTypesMap.put(mediaType, new HashSet<>());
-            artistsMap.put(mediaType, new HashSet<>());
-            genresMap.put(mediaType, new HashSet<>());
-            tagsMap.put(mediaType, new HashSet<>());
-            platformsMap.put(mediaType, new HashSet<>());
-        }
-    }
-
-    private static void addEntriesToSet(MediaType mediaType,
-                                      Map<MediaType, Set<String>> entryTypesMap,
-                                      Map<MediaType, Set<String>> artistsMap,
-                                      Map<MediaType, Set<String>> genresMap,
-                                      Map<MediaType, Set<String>> tagsMap,
-                                      Map<MediaType, Set<String>> platformsMap,
-                                      String type, String artist, String genre, List<String> tags, Map<String, String> ratings) {
-        entryTypesMap.get(mediaType).add(type);
-        artistsMap.get(mediaType).add(artist);
-        genresMap.get(mediaType).add(genre);
-        tagsMap.get(mediaType).addAll(tags);
-        platformsMap.get(mediaType).addAll(ratings.keySet());
-    }
-
-    private static void addSetsToLogicData(Map<MediaType, Set<String>> entryTypesMap,
-                                           Map<MediaType, Set<String>> artistsMap,
-                                           Map<MediaType, Set<String>> genresMap,
-                                           Map<MediaType, Set<String>> tagsMap,
-                                           Map<MediaType, Set<String>> platformsMap,
-                                           LogicDataClass logicDataClass) {
-        addSetsToLogicDataHelper(entryTypesMap, logicDataClass.getEntryTypes());
-        addSetsToLogicDataHelper(artistsMap, logicDataClass.getArtists());
-        addSetsToLogicDataHelper(genresMap, logicDataClass.getGenres());
-        addSetsToLogicDataHelper(tagsMap, logicDataClass.getTags());
-        addSetsToLogicDataHelper(platformsMap, logicDataClass.getRatingPlatforms());
-    }
-
-    private static void addSetsToLogicDataHelper (Map<MediaType, Set<String>> entryTypesMap,
-                                                  ObservableMap<MediaType, ObservableList<String>> logicMap) {
-        for (Map.Entry<MediaType, Set<String>> entry : entryTypesMap.entrySet()) {
-            MediaType mediaType = entry.getKey();
-            Set<String> entryTypes = entry.getValue();
-            for (String entryType : entryTypes) {
-                logicMap.get(mediaType).add(entryType);
-            }
-        }
-    }
-
 
 
     // -----------------------------------
@@ -219,6 +164,10 @@ public class DBManager {
 
 
     // ----- Add artists/genres/tags/platforms -----
+
+    public static void addEntryType(String entryType, MediaType mediaType) { DBEntryTypes.addEntryType(entryType, mediaType); }
+
+    public static void addFranchise(String franchise, String entryType, MediaType mediaType) { DBFranchises.addFranchise(franchise, entryType, mediaType); }
 
     public static void addArtist(ArtistEntry artist) { DBArtists.addArtist(artist); }
 
@@ -231,7 +180,7 @@ public class DBManager {
 
     // ----- Add media_entry to database -----
 
-    public static <T extends DataSet> int addMediaEntry(T dataSet, MediaType mediaType) {
+    public static int addMediaEntry(DataSet dataSet, MediaType mediaType) {
         try (Connection conn = DriverManager.getConnection(Logic.getInstance().getDB_URL())) {
 
             conn.setAutoCommit(false);
@@ -245,11 +194,10 @@ public class DBManager {
             // Add ratings
             DBRatings.addRating(new RatingEntry(entryID, dataSet.getRatings()), conn);
 
-            // Add played
-            if (dataSet.getClass().isInstance(GameDataSet.class)) {
-                GameDataSet gameDataSet = (GameDataSet) dataSet;
-                DBConsumedMedia.addConsumedMedium(new ConsumedEntry(entryID, gameDataSet.getLastPlayedDate(), gameDataSet.getLastPlayedVersion()), conn);
-            }
+            // Add consumed
+            LocalDate date = LocalDate.parse(dataSet.getConsumedDate());
+            DBConsumedMedia.addConsumedMedium(entryID, date, dataSet.getConsumedVersion(), conn);
+
 
             conn.commit();
 

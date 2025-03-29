@@ -15,7 +15,7 @@ class DBRatings extends DBHelper {
             "rating TEXT, " +
             "CONSTRAINT fk_medium_id FOREIGN KEY (medium_id) REFERENCES media_entries(entry_id), " +
             "CONSTRAINT fk_platform_id FOREIGN KEY (ratingPlatform_id) REFERENCES rating_platforms(ratingPlatform_id), " +
-            "CONSTRAINT pk_game_id_platform_id PRIMARY KEY (medium_id, platform_id)" +
+            "CONSTRAINT pk_game_id_platform_id PRIMARY KEY (medium_id, ratingPlatform_id)" +
             ");";
 
 

@@ -1,8 +1,9 @@
 package database.logic;
 
-import database.controller.tabController.TabController;
+import database.controller.TabController;
+import database.enums.MediaType;
 import database.enums.TriState;
-import database.model.propertyModels.DataSet;
+import database.model.DataSet;
 import io.github.palexdev.materialfx.controls.MFXCheckListView;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.collections.ListChangeListener;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class Filter<T extends TabController, U extends DataSet> {
+public class Filter {
 
     // Filter Setter Objects
     MFXTextField filterTitle;
@@ -27,14 +28,14 @@ public class Filter<T extends TabController, U extends DataSet> {
     ObservableMap<String, TriState> filterMapGenres;
 
     // Filter Lists
-    ObservableList<U> unfilteredData;
-    FilteredList<U> preFilteredData;
-    FilteredList<U> filteredData;
+    ObservableList<DataSet> unfilteredData;
+    FilteredList<DataSet> preFilteredData;
+    FilteredList<DataSet> filteredData;
 
 
-    public Filter(T controller, ObservableList<U> data) {
+    public Filter(TabController controller, MediaType mediaType) {
 
-        initDataLists(data);
+        initDataLists(Logic.getInstance().getMediaEntries(mediaType));
         initFilterObjects(controller);
         initListener(controller);
 
@@ -44,13 +45,13 @@ public class Filter<T extends TabController, U extends DataSet> {
 
     // ----- Initialize Objects -----
 
-    void initDataLists(ObservableList<U> data) {
+    void initDataLists(ObservableList<DataSet> data) {
         unfilteredData = data;
         preFilteredData = new FilteredList<>(unfilteredData, game -> true);
         filteredData = new FilteredList<>(preFilteredData, game -> true);
     }
 
-    void initFilterObjects(T controller) {
+    void initFilterObjects(TabController controller) {
         filterTitle = controller.getFilterObjectTitle();
         filterArtist = controller.getFilterObjectArtist();
         filterMapGenres = castToTriStateMap(controller.getFilterObjectGenres().getUserData());
@@ -58,13 +59,13 @@ public class Filter<T extends TabController, U extends DataSet> {
         filterMapTags = castToTriStateMap(controller.getFilterObjectTags().getUserData());
     }
 
-    void initListener(T controller) {
+    void initListener(TabController controller) {
         // Add listeners to the text fields
         controller.getFilterObjectTitle().textProperty().addListener((observable, oldValue, newValue) -> setPredicates(false));
         controller.getFilterObjectArtist().textProperty().addListener((observable, oldValue, newValue) -> setPredicates(false));
 
         // Add listeners to the checklist views
-        unfilteredData.addListener((ListChangeListener<? super U>) c -> setPredicates(false));
+        unfilteredData.addListener((ListChangeListener<? super DataSet>) c -> setPredicates(false));
         filterMapGenres.addListener((MapChangeListener<? super String, ? super TriState>) change -> setPredicates(false));
         filterState.getSelectionModel().getSelection().addListener((MapChangeListener<? super Integer, ? super String>) change -> setPredicates(false));
         filterMapTags.addListener((MapChangeListener<? super String, ? super TriState>) change -> setPredicates(true));
@@ -86,7 +87,7 @@ public class Filter<T extends TabController, U extends DataSet> {
 
     }
 
-    Predicate<U> getPreFilter(Set<String> selectedStates) {
+    Predicate<DataSet> getPreFilter(Set<String> selectedStates) {
         return entry -> {
             boolean genreMatch = checkSingleTriStateMatch(entry.getGenre(), filterMapGenres);
             boolean stateMatch =  selectedStates.isEmpty() || (entry.getState() != null && selectedStates.contains(entry.getState()));
@@ -99,14 +100,14 @@ public class Filter<T extends TabController, U extends DataSet> {
         };
     }
 
-    Predicate<U> getTagFilter() {
+    Predicate<DataSet> getTagFilter() {
         return entry -> checkTriStateMatch(entry.getTags(), filterMapTags);
     }
 
 
     // ----- Getter -----
 
-    public FilteredList<U> getFilteredData() {
+    public FilteredList<DataSet> getFilteredData() {
         return filteredData;
     }
 
@@ -114,7 +115,7 @@ public class Filter<T extends TabController, U extends DataSet> {
 
     // ----- Helper Methods -----
 
-    boolean extraFilter(U entry) {
+    boolean extraFilter(DataSet entry) {
         return true;
     }
 

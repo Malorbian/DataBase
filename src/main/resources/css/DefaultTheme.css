@@ -29,6 +29,11 @@
     -fx-border-radius: 5;
 }
 
+#no-border {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 .grid-pane {
     -fx-background-color: transparent;
     -fx-background-radius: 10;
@@ -322,6 +327,7 @@
 .mfx-text-field .floating-text {
   -fx-font-family: "Open Sans Regular";
   -fx-text-fill: -mfx-text-he;
+  -fx-text-alignment: center;
 }
 
 .mfx-text-field:floating .floating-text {
@@ -541,6 +547,7 @@ Date Picker
 ********************/
 .mfx-date-picker {
   -fx-padding: 3 5 3 5;
+  -fx-border-color: transparent;
 }
 
 .mfx-date-picker .mfx-icon-wrapper .mfx-ripple-generator {
@@ -632,6 +639,7 @@ Popup
   -fx-padding: 0 1 0 0;
   -fx-pref-width: 32;
   -fx-pref-height: 32;
+  -fx-border-color: transparent;
   -fx-background-radius: 100%;
   -fx-border-radius: 100%;
 }

@@ -3,7 +3,6 @@ package database.database_manager;
 import database.enums.MediaType;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 class DBMediaTypes extends DBHelper {

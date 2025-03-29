@@ -124,8 +124,9 @@
             </TabPane>
             <GridPane alignment="CENTER" maxHeight="15.0" minHeight="15.0" prefHeight="15.0" prefWidth="1870.0" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
               <columnConstraints>
-                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="1274.0475463867188" minWidth="10.0" prefWidth="1274.0475463867188" />
-                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="928.90478515625" minWidth="10.0" prefWidth="595.9524536132812" />
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="600.0" minWidth="600.0" prefWidth="600.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1274.0475463867188" minWidth="10.0" prefWidth="736.4285714285713" />
+                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="600.0" minWidth="600.0" prefWidth="600.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -133,8 +134,9 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label fx:id="lblStatus" prefHeight="32.0" GridPane.halignment="LEFT" />
-                  <Label fx:id="lblCurrentPath" text="Current Database: daten.db" GridPane.columnIndex="1" />
+                  <Label fx:id="lblStatus" maxWidth="550.0" prefHeight="17.0" prefWidth="550.0" text="Status Label" GridPane.halignment="LEFT" />
+                  <Label fx:id="lblCurrentPath" alignment="CENTER_RIGHT" maxWidth="550.0" prefWidth="550.0" text="Current Database: none" GridPane.columnIndex="2" />
+                  <Label fx:id="lblMediaCount" alignment="CENTER" maxWidth="550.0" prefHeight="32.0" prefWidth="550.0" text="Filter Label" GridPane.columnIndex="1" />
                </children>
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" top="25.0" />
