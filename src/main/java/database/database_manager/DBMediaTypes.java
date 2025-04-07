@@ -29,7 +29,7 @@ class DBMediaTypes extends DBHelper {
     }
 
     static int getMediaTypeId(MediaType mediaTypeName, Connection conn) {
-        String sql = "SELECT mediaType_id FROM media WHERE name = ?";
+        String sql = "SELECT mediaType_id FROM media_types WHERE name = ?";
         return getIdByString(sql, mediaTypeName.toString(), conn);
     }
 

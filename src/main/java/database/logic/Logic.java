@@ -103,6 +103,9 @@ public class Logic {
 
     public void addByAttributeType(String value, AttributeTypes attributeType, MediaType mediaType) {
         switch (attributeType) {
+            case ENTRY_TYPE:
+                logicDataClass.addEntryType(value, mediaType);
+                break;
             case ARTIST:
                 logicDataClass.addArtist(new ArtistEntry(-1, value, mediaType));
                 break;

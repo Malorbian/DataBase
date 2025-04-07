@@ -22,20 +22,20 @@ class DBRatingPlatforms extends DBHelper{
 
 
     static void addRatingPlatform(String ratingPlatform, MediaType mediaType) {
-        String addEntrySQL = "INSERT OR IGNORE INTO ratingPlatforms (name) VALUES (?)";
+        String addEntrySQL = "INSERT OR IGNORE INTO rating_platforms (name) VALUES (?)";
         String mediaTypeRelationSql = "INSERT OR IGNORE INTO ratingPlatforms_mediaTypes(ratingPlatform_id, mediaType_id) VALUES (?, ?)";
         addEntryByStringWithRelations(ratingPlatform, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
     static int getRatingPlatformId(String ratingPlatform, int mediaType_Id, Connection conn) {
-        String sql = "SELECT ratingPlatform_id FROM ratingPlatforms " +
+        String sql = "SELECT ratingPlatform_id FROM rating_platforms " +
                 "LEFT JOIN mediaTypes_ratingPlatforms ON mediaTypes_ratingPlatforms.ratingPlatform_id = ratingPlatforms.ratingPlatform_id " +
                 "WHERE LOWER(name) = LOWER(?) AND mediaType_id = " + mediaType_Id;
         return getIdByString(sql, ratingPlatform, conn);
     }
 
     static int getRatingPlatformId(String ratingPlatform, Connection conn) {
-        String sql = "SELECT ratingPlatform_id FROM ratingPlatforms " +
+        String sql = "SELECT ratingPlatform_id FROM rating_platforms " +
                 "WHERE LOWER(name) = LOWER(?)";
         return getIdByString(sql, ratingPlatform, conn);
     }

@@ -22,13 +22,13 @@ class DBEntryTypes extends DBHelper{
 
 
     static void addEntryType(String entryType, MediaType mediaType) {
-        String addEntrySQL = "INSERT OR IGNORE INTO entryTypes (name) VALUES (?)";
+        String addEntrySQL = "INSERT OR IGNORE INTO entry_types (name) VALUES (?)";
         String mediaTypeRelationSql = "INSERT OR IGNORE INTO entryTypes_mediaTypes(entryType_id, mediaType_id) VALUES (?, ?)";
         addEntryByStringWithRelations(entryType, mediaType, addEntrySQL, mediaTypeRelationSql);
     }
 
     static int getEntryTypeId(String entryType, int mediaType_Id, Connection conn) {
-        String sql = "SELECT entryType_id FROM entryTypes " +
+        String sql = "SELECT entryType_id FROM entry_types " +
                 "LEFT JOIN mediaTypes_entryTypes ON mediaTypes_entryTypes.entryType_id = entryTypes.entryType_id " +
                 "WHERE LOWER(name) = LOWER(?) AND mediaType_id = " + mediaType_Id;
         return getIdByString(sql, entryType, conn);

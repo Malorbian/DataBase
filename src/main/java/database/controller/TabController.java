@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TabController extends ControllerHelper{
+public class TabController extends ControllerHelper {
 
     // -----------------------------------
     // ---------- FXML Elements ----------
@@ -94,7 +94,6 @@ public class TabController extends ControllerHelper{
         this.mediaType = mediaType;
         this.parentController = parentController;
     }
-
 
     public void initialize() {
         // Bind Size of GridPane to TabPane

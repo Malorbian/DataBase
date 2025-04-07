@@ -117,6 +117,7 @@ public class AddMediaEntryController extends ControllerHelper{
         });
     }
 
+
     private void initDoubleRestriction(MFXTextField tf) {
         tf.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -132,6 +133,7 @@ public class AddMediaEntryController extends ControllerHelper{
         }
         initializeEditableComboBox(cbFranchise, franchises, AttributeTypes.FRANCHISE, mediaType, lblStatus);
 
+        /*
         // Franchise filter
         cbEntryType.setOnCommit(s -> {
             try {
@@ -143,6 +145,8 @@ public class AddMediaEntryController extends ControllerHelper{
                 }
             } catch (Exception ignored) {}
         });
+
+         */
     }
 
     private void initializeSaveEntryButton() {
