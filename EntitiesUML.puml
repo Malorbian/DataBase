@@ -1,0 +1,134 @@
+@startuml
+' https://plantuml.com/class-diagram
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+enum Discipline {
+  GAME
+  VIDEO
+  MOVIE
+  STORY
+  MUSIC
+  ART
+}
+
+enum State {
+  FINISHED
+  GETS_UPDATES
+  EARLY_ACCESS
+  ABANDONED
+  PLANNED
+  UNKNOWN
+}
+
+
+package "Media" {
+    abstract class MediaBase {
+      -title: String
+      -discipline: Discipline
+      -state: State
+      -lastActivity: Date
+      -link: String
+      ---
+      +add_/remove_Tag(tag: Tag) : void
+      +add_/remove_Genre(genre: Genre) : void
+    }
+
+    package "Media Subtypes" {
+        class Game {
+          -version: String
+        }
+
+        class MotionPicture {
+          -lengthInMinutes: int
+        }
+
+        class Story
+        class Video {
+          -lengthInMinutes: int
+        }
+        class Music {
+          -album: String
+        }
+        class Art {
+          -medium: String
+        }
+    }
+}
+
+package "People" {
+    class Person {
+      -name: String
+    }
+
+    class Credit {
+      -role: String
+    }
+}
+
+package "Ratings" {
+    class Rating {
+      -score: int
+    }
+
+    class RatingPlatform {
+      -name: String
+      -discipline: Discipline
+    }
+}
+
+class Genre {
+  -name: String
+}
+
+class Tag {
+  -name: String
+}
+
+class Series {
+  -title: String
+  -seasonCount: int
+  -episodeCount: int
+}
+
+class Franchise {
+  -title: String
+}
+
+' -------------------------
+' Inheritance
+' -------------------------
+MediaBase <|-- Game
+MediaBase <|-- MotionPicture
+MediaBase <|-- Story
+MediaBase <|-- Video
+MediaBase <|-- Music
+MediaBase <|-- Art
+
+' -------------------------
+' Credits (association class style)
+' -------------------------
+MediaBase "1" <-- Credit
+Person   "1" <-- Credit
+
+' -------------------------
+' Classification
+' -------------------------
+MediaBase "0..*" -- "1..*" Genre
+MediaBase "0..*" --o "0..*" Tag
+
+' -------------------------
+' Ratings
+' -------------------------
+MediaBase "1" <-- Rating
+RatingPlatform "1" <-- Rating
+
+' -------------------------
+' Grouping
+' -------------------------
+Franchise "0..1" <--o MediaBase
+Series --> "1..*" Video
+Series --> "1..*" MotionPicture
+
+@enduml
