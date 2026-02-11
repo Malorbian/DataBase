@@ -46,7 +46,7 @@ public class Series {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    private State state = State.UNKNOWN;
+    private State state;
 
     public Series(UUID id, String name, Discipline discipline) {
         this.id = id;

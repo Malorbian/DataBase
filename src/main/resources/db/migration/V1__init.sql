@@ -51,7 +51,7 @@ CREATE TABLE series (
                         episode_count INT  NOT NULL DEFAULT 0,
                         current_episode INT NOT NULL DEFAULT 0,
                         current_season  INT NOT NULL DEFAULT 0,
-                        state         TEXT NOT NULL DEFAULT 'UNKNOWN',
+                        state         TEXT NULL,
                         CONSTRAINT uk_series_name_discipline UNIQUE (name, discipline)
 );
 
@@ -65,7 +65,7 @@ CREATE TABLE media (
                        organisation_id UUID NULL,
                        person_id       UUID NULL,
                        discipline      TEXT NOT NULL,
-                       state           TEXT NOT NULL DEFAULT 'UNKNOWN',
+                       state           TEXT NULL,
                        last_activity   DATE NULL,
                        link            TEXT NULL,
 

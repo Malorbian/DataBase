@@ -48,7 +48,7 @@ public abstract class MediaBase {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    private State state = State.UNKNOWN;
+    private State state;
 
     @Setter
     private LocalDate lastActivity;
