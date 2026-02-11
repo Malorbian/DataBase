@@ -1,7 +1,7 @@
 package com.jpw.database.model.mediaTypes;
 
 import com.jpw.database.model.enums.Discipline;
-import com.jpw.database.model.enums.StoryType;
+import com.jpw.database.model.enums.VideoType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +13,21 @@ import java.util.UUID;
 @PrimaryKeyJoinColumn(name = "media_id")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Story extends MediaBase {
+public class Video extends MediaBase {
+
+    @Setter
+    private Double lengthInMinutes;
 
     @Setter
     @Enumerated(EnumType.STRING)
-    private StoryType storyType;
+    private VideoType videoType;
 
-    public Story(UUID id, String title) {
-        super(id, title, Discipline.STORY);
+    @Setter
+    private UUID seriesId;
+
+
+    public Video(UUID id, String title) {
+        super(id, title, Discipline.VIDEO);
     }
 
 }

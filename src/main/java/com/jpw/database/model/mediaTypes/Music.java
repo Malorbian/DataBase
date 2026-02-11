@@ -1,28 +1,25 @@
 package com.jpw.database.model.mediaTypes;
 
-import com.jpw.database.model.Artist;
-import com.jpw.database.model.Discipline;
+import com.jpw.database.model.enums.Discipline;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
-@Table(name = "videos")
 @PrimaryKeyJoinColumn(name = "media_id")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Videos extends MediaBase {
+public class Music extends MediaBase {
 
     @Setter
-    private Double lengthInMinutes;
+    private String album;
 
-
-
-    public Videos(String title, Artist artist) {
-        super(title, artist, Discipline.VIDEOS);
+    public Music(UUID id, String title) {
+        super(id, title, Discipline.MUSIC);
     }
 
 }

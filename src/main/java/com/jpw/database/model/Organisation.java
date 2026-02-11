@@ -1,6 +1,7 @@
 package com.jpw.database.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,12 +11,12 @@ import java.util.UUID;
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(
-                name = "uk_tag_name",
-                columnNames = {"name"})
+                name = "uk_organisation_name",
+                columnNames = "name")
 })
 @Getter
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Tag {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Organisation {
 
     @Id
     private UUID id;
@@ -24,9 +25,8 @@ public class Tag {
     @Column(nullable = false)
     private String name;
 
-    public Tag(UUID id, String name) {
+    public Organisation(UUID id, String name) {
         this.id = id;
         this.name = name;
     }
-
 }

@@ -6,40 +6,36 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
-@Table(
-        name = "ratings",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_rating_media_platform",
-                        columnNames = {"media_id", "platform_id"}
-                )
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_rating_platform_media",
+                columnNames = {"platform_id", "media_id"})
+})
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Rating {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Setter
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "platform_id")
-    private RatingPlatform platform;
+    @Column(nullable = false)
+    private UUID platformId;
 
     @Setter
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "media_media_id")
-    private MediaBase media;
+    @Column(nullable = false)
+    private UUID mediaId;
 
     @Setter
     private double rating;
 
-    public Rating(RatingPlatform platform, MediaBase media, double rating) {
-        this.platform = platform;
-        this.media = media;
+    public Rating(UUID id, UUID platform_ID, UUID media, double rating) {
+        this.id = id;
+        this.platformId = platform_ID;
+        this.mediaId = media;
         this.rating = rating;
     }
 

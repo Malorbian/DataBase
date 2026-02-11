@@ -6,30 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(
-                name = "uk_genre_name",
-                columnNames = "name")
+                name = "uk_media_genre_media_genre",
+                columnNames = {"media_id", "genre_id"})
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Genre {
+public class MediaGenre {
 
     @Id
     private UUID id;
 
     @Setter
     @Column(nullable = false)
-    private String name;
+    private UUID mediaId;
+    @Setter
+    @Column(nullable = false)
+    private UUID genreId;
 
-    public Genre(UUID id, String name) {
+    public MediaGenre(UUID id, UUID mediaId, UUID genreId) {
         this.id = id;
-        this.name = name;
+        this.mediaId = mediaId;
+        this.genreId = genreId;
     }
-
 }

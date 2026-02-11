@@ -53,14 +53,13 @@ package "Enums" {
 package "Media" {
     abstract class MediaBase {
         -title: String
+        -primaryPersonId: UUID
+        -primaryOrganisationId: UUID
         -discipline: Discipline
         -state: State
         -lastActivity: Date
         -link: String
         -note: String
-        ---
-        +add_/remove_Tag(tag: Tag) : void
-        +add_/remove_Genre(genre: Genre) : void
     }
 
     package "Media Subtypes" {
@@ -89,6 +88,16 @@ package "Media" {
 }
 
 package "ManyToMany" {
+    class MediaGenre {
+        -mediaId: UUID
+        -genreID: UUID
+    }
+
+    class MediaTag {
+        -mediaId: UUID
+        -tagId: UUID
+    }
+
     class Genre {
         -name: String
     }
@@ -102,6 +111,7 @@ package "ManyToOne" {
     package "People" {
         class Person {
             -name: String
+            -discipline: Discipline
         }
 
         class Credit {
@@ -121,13 +131,21 @@ package "ManyToOne" {
             -discipline: Discipline
         }
     }
+
+    class Organization {
+        -name: String
+        -link: String
+    }
 }
 
 package "OneToMany" {
     class Series {
         -title: String
+        -discipline: Discipline
         -seasonCount: int
         -episodeCount: int
+        -currentSeason: int
+        -currentEpisode: int
         -state: State
     }
 
@@ -156,8 +174,10 @@ Person   "1" <-- "0..*" Credit
 ' -------------------------
 ' Classification
 ' -------------------------
-MediaBase "0..*" --> "1..*" Genre
-MediaBase "0..*" o--> "0..*" Tag
+MediaBase "0..*" <-- "1..*" MediaGenre
+MediaBase "0..*" <--o "0..*" MediaTag
+Genre "1" <-- "0..*" MediaGenre
+Tag "1" <-- "0..*" MediaTag
 
 ' -------------------------
 ' Ratings
@@ -170,6 +190,7 @@ RatingPlatform "1" <-- "0..*" Rating
 ' -------------------------
 Franchise "1" <--o "0..*" MediaBase
 Series "1" <-- "0..*" Video
+Organization "1..*" <-- "0..*" MediaBase
 
 ' invisible relationships for easier navigation
 "ManyToMany" -[hidden]- "OneToMany"
