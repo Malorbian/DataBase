@@ -28,7 +28,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MainController extends ControllerHelper implements Initializable {
+public class  MainController extends ControllerHelper implements Initializable {
 
     // ---------- FXML ----------
 
