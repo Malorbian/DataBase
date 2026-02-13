@@ -51,6 +51,9 @@ public abstract class MediaBase {
     private State state;
 
     @Setter
+    private LocalDate releaseDate;
+
+    @Setter
     private LocalDate lastActivity;
 
     @Setter
