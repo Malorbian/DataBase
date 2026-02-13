@@ -24,6 +24,7 @@
     </properties>
 
     <dependencies>
+        <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -34,15 +35,19 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+
+        <!-- MaterialFX -->
         <dependency>
             <groupId>io.github.palexdev</groupId>
             <artifactId>materialfx</artifactId>
             <version>11.17.0</version>
         </dependency>
+
+        <!-- SQLite -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.46.1.2</version> <!-- Aktuelle Version prüfen -->
+            <version>3.46.1.2</version>
         </dependency>
     </dependencies>
 
@@ -53,7 +58,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>21</release> <!-- Passe das an deine Java-Version an -->
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
             <!-- JavaFX Maven Plugin -->
